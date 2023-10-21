@@ -2,6 +2,7 @@ import { Cartesian3, Color } from 'cesium'
 import { Viewer, Entity} from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
+import "./App.css"
 
 
 function App() {
@@ -25,31 +26,6 @@ function App() {
     console.log(subset);
   }
 
-  const data = [
-    {
-      type: "Feature",
-      properties: {
-        name: "Coors Field",
-        amenity: "Baseball Stadium",
-        popupContent: "This is where the Rockies play!",
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [-104.99404, 39.75621],
-      },
-    },
-    {
-      type: "Feature",
-      properties: {
-        name: "Tokyo",
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [139.69, 35.69],
-      },
-    },
-    ];
-    
   //https://stackoverflow.com/questions/61419710/how-to-import-a-csv-file-in-reactjs
   async function getData() {
     const data = Papa.parse(await fetchCsv(), {
@@ -74,20 +50,21 @@ function App() {
 
   return (
     <div>
-      <Viewer full>
+      <div className='gui'>
+          <button className='guiBut' onClick={() => createSubarray()}></button>
+      </div>
+      <Viewer className='viewer'>
         {array && subset ?
         subset.map(c => 
           <Entity
             name= {c.admin_name}
             position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
-            point={{ pixelSize: 10, color: Color.WHITE }}
+            point={{ pixelSize: 20, color: Color.WHITE }}
           />
-          // console.log(c)
         )
         : <></>}
       </Viewer>
 
-      
     </div>
   );
 }
