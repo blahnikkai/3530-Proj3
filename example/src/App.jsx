@@ -9,7 +9,7 @@ function App() {
   const [array, setArray] = useState();
   const [subset, setSubset] = useState();
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(10);
+  const [num, setNum] = useState(5);
 
 
   useEffect(() => {
@@ -59,26 +59,34 @@ function App() {
         {array && subset ?
 
         <div>
-          {subset.map(c => 
-            <Entity
-              name= {c.admin_name}
-              position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
-              point={{ pixelSize: 20, color: Color.WHITE }}
-            />
+          {subset.map((c) => 
+            <div key={c.admin_name}>
+              <Entity
+                name= {c.admin_name}
+                position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
+                point={{ pixelSize: 20, color: Color.WHITE }}
+              />
+              {subset.map((d) => {
+                return <div key={d.admin_name}>                
+                  <Entity>
+                    <PolylineGraphics
+                      show
+                      width={5}
+                      positions={ 
+                        Cartesian3.fromDegreesArray(
+                          [parseFloat(c.lng), parseFloat(c.lat), parseFloat(d.lng), parseFloat(d.lat)]
+                        )
+                      }
+                      material= {Color.RED}
+                    />
+                  </Entity> 
+                </div>
+
+              })}
+            </div>
+
           )}
 
-          <Entity>
-            <PolylineGraphics
-              show
-              width={5}
-              positions={ 
-                Cartesian3.fromDegreesArray(
-                  [parseFloat(subset[0].lng), parseFloat(subset[0].lat), parseFloat(subset[1].lng), parseFloat(subset[1].lat)]
-                )
-              }
-              material= {Color.WHITE}
-            />
-          </Entity>
         </div>
         
 
