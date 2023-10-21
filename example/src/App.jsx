@@ -75,14 +75,19 @@ function App() {
   return (
     <div>
       <Viewer full>
-        {data.map(d => 
+        {array && subset ?
+        subset.map(c => 
           <Entity
-            name="Tokyo"
-            position={Cartesian3.fromDegrees(139.69, 35.69)}
+            name= {c.admin_name}
+            position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
             point={{ pixelSize: 10, color: Color.WHITE }}
           />
-        )}
+          // console.log(c)
+        )
+        : <></>}
       </Viewer>
+
+      
     </div>
   );
 }
