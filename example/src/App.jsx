@@ -1,5 +1,5 @@
-import { Cartesian3, Color } from 'cesium'
-import { Viewer, Entity} from "resium";
+import { Cartesian3, Color, Material } from 'cesium'
+import { Viewer, Entity, PolylineGraphics } from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import "./App.css"
@@ -10,6 +10,7 @@ function App() {
   const [subset, setSubset] = useState();
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(10);
+
 
   useEffect(() => {
     getData();
@@ -47,6 +48,7 @@ function App() {
     return csv;
   }
 
+  const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
 
   return (
     <div>
@@ -55,14 +57,32 @@ function App() {
       </div>
       <Viewer className='viewer'>
         {array && subset ?
-        subset.map(c => 
-          <Entity
-            name= {c.admin_name}
-            position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
-            point={{ pixelSize: 20, color: Color.WHITE }}
-          />
-        )
-        : <></>}
+
+        <div>
+          {subset.map(c => 
+            <Entity
+              name= {c.admin_name}
+              position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
+              point={{ pixelSize: 20, color: Color.WHITE }}
+            />
+          )}
+
+          <Entity>
+            <PolylineGraphics
+              show
+              width={5}
+              positions={ 
+                Cartesian3.fromDegreesArray(
+                  [parseFloat(subset[0].lng), parseFloat(subset[0].lat), parseFloat(subset[1].lng), parseFloat(subset[1].lat)]
+                )
+              }
+              material= {Color.WHITE}
+            />
+          </Entity>
+        </div>
+        
+
+        : <>Loading...</>}
       </Viewer>
 
     </div>
@@ -70,3 +90,33 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { Cartesian3, Color } from "cesium";
+// import { Viewer, Entity, PolylineGraphics } from "resium";
+
+// const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
+
+// const App = () => {
+
+
+//   return (
+//     <Viewer full>
+//       <Entity>
+//         <PolylineGraphics
+//           show
+//           width={3}
+//           material={Color.RED}
+//           positions={positions}
+//         />
+//       </Entity>
+//       <div style={{ position: "absolute", left: "0", top: "0", color: "#fff" }}>{0}</div>
+//     </Viewer>
+//   );
+// };
+
+// export default App;
