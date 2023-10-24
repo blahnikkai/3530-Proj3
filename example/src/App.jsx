@@ -48,7 +48,6 @@ function App() {
     return csv;
   }
 
-  const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
 
   return (
     <div>
@@ -71,13 +70,14 @@ function App() {
                   <Entity>
                     <PolylineGraphics
                       show
-                      width={5}
+                      width={2}
                       positions={ 
                         Cartesian3.fromDegreesArray(
                           [parseFloat(c.lng), parseFloat(c.lat), parseFloat(d.lng), parseFloat(d.lat)]
                         )
                       }
                       material= {Color.RED}
+                      id= {"placeholder - doesn't work?"}
                     />
                   </Entity> 
                 </div>
@@ -102,29 +102,3 @@ export default App;
 
 
 
-
-// import React, { useState, useEffect } from "react";
-// import { Cartesian3, Color } from "cesium";
-// import { Viewer, Entity, PolylineGraphics } from "resium";
-
-// const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
-
-// const App = () => {
-
-
-//   return (
-//     <Viewer full>
-//       <Entity>
-//         <PolylineGraphics
-//           show
-//           width={3}
-//           material={Color.RED}
-//           positions={positions}
-//         />
-//       </Entity>
-//       <div style={{ position: "absolute", left: "0", top: "0", color: "#fff" }}>{0}</div>
-//     </Viewer>
-//   );
-// };
-
-// export default App;
