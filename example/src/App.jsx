@@ -3,9 +3,63 @@ import { Viewer, Entity, PolylineGraphics } from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import "./App.css"
-// Earth's radius in meters
-const EARTH_R = 6378100;
 
+const INF = 1e12;
+
+function makeArray(rows, cols, value) {
+  let arr = []
+  for(let i = 0; i < rows; ++i) {
+    let row = [];
+    for(let j = 0; j < cols; ++j) {
+      row.push(value)
+    }
+    arr.push(row);
+  }
+  return arr;
+}
+
+function inMask(mask, ind) {
+  return (mask & (1 << ind)) !== 0;
+}
+
+function heldKarp(adjMat) {
+  const n = adjMat.length;
+  let dp = makeArray(1 << n, n, INF);
+  let nxt = makeArray(1 << n, n, -1);
+  for(let i = (1 << n) - 1; i >= 0; --i) {
+    for(let j = 0; j < n; ++j) {
+      if(i == (1 << n) - 1) {
+        dp[i][j] = adjMat[j][0];
+        nxt[i][j] = 0;
+        continue;
+      }
+      if(!inMask(i, j))
+        continue;
+      for(let k = 0; k < n; ++k) {
+        if(inMask(i, k))
+          continue;
+        const alt = adjMat[j][k] + dp[i | (1 << k)][k];
+        if(alt < dp[i][j]) {
+          dp[i][j] = alt;
+          nxt[i][j] = k;
+        }
+      }
+    }
+  }
+  let edges = [];
+  let visited = 1;
+  let cur = 0;
+  while(true) {
+    let nxtNode = nxt[visited][cur];
+    edges.push([cur, nxtNode]);
+    if(nxtNode === 0) {
+      break;
+    }
+    visited |= (1 << nxtNode);
+    cur = nxtNode;
+  }
+  return [dp[1][0], edges];
+}
 
 function App() {
   const [array, setArray] = useState([]);
@@ -13,38 +67,53 @@ function App() {
   const [edges, setEdges] = useState([]);
   const [adjMat, setAdjMat] = useState([[]]);
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(5);
+  const [num, setNum] = useState(10);
 
   useEffect(() => {
     getData();
   }, [])
 
   useEffect(() => {
+    if(array.length === 0)
+      return;
+    console.log(array);
     createSubarray();
   }, [array])
 
   useEffect(() => {
-    buildAdjMat();
-    console.log(subset);
-    if(subset.length !== 0) {
-      setEdges([[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]);
+    if(subset.length === 0) {
+      return;
     }
+    buildAdjMat();
   }, [subset])
 
-  function calcDistance(lat1, lng1, lat2, lng2) {
-    let p1 = Cartesian3.fromDegrees(lng1, lat1)
-    let p2 = Cartesian3.fromDegrees(lng2, lat2)
-    // great circle distance in km
-    return (1 / 1000) * (EARTH_R * Math.acos(Cartesian3.dot(p1, p2) / (EARTH_R ** 2)))
+  useEffect(() => {
+    if(subset.length === 0) {
+      return;
+    }
+    const result = heldKarp(adjMat);
+    setEdges(result[1]);
+  }, [adjMat])
+
+  function distance(lat1, lon1, lat2, lon2) {
+    const r = 6371; // km
+    const p = Math.PI / 180;
+  
+    const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
+                  + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
+                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
+  
+    return 2 * r * Math.asin(Math.sqrt(a));
   }
 
   function buildAdjMat() {
     let mat = Array.from(Array(subset.length), () => new Array(subset.length))
     for(let i = 0; i < subset.length; ++i) {
         for(let j = i + 1; j < subset.length; ++j) {
-            const dist = calcDistance(subset[i].lng, subset[i].lat, subset[j].lng, subset[j].lat)
-            mat[i][j] = dist
-            mat[j][i] = dist
+            const dist = distance(subset[i].lat, subset[i].lng, 
+              subset[j].lat, subset[j].lng);
+            mat[i][j] = dist;
+            mat[j][i] = dist;
         }
     }
     console.log(mat)
@@ -57,7 +126,7 @@ function App() {
     setSubset(newSubset); //cap num at 300?
     setIndex((index + num) % 41000);
     // why is array length only ~9000 instead of 44000
-    console.log(array.length)
+    // console.log(array.length);
   }
 
   //https://stackoverflow.com/questions/61419710/how-to-import-a-csv-file-in-reactjs
@@ -87,21 +156,21 @@ function App() {
   return (
     <div>
       <div className='gui'>
-          <button className='guiBut' onClick={() => createSubarray()}></button>
+        <button className='guiBut' onClick={() => createSubarray()}></button>
       </div>
       <Viewer className='viewer'>
         {array && subset ?
-
         <div>
           {subset.map((c, ind) => 
-            <div key={c.admin_name}>
+            <div key={c.city}>
               <Entity
                 name={c.city}
                 position={Cartesian3.fromDegrees(c.lng, c.lat)}
                 point={{ pixelSize: 20, color: Color.WHITE }}
                 label={{ text: `${c.city}, ${c.iso3} (${ind})`, 
-                font: '10px sans-serif', 
-                pixelOffset: new Cartesian2(20, 20) }}
+                  font: '10px sans-serif', 
+                  pixelOffset: new Cartesian2(20, 20) 
+                }}
               />
               {/* {subset.map((d) => {
                 return <div key={d.admin_name}>                
@@ -123,7 +192,7 @@ function App() {
             </div>
           )}
           {edges.map((edge, ind) =>
-            {return <div key={ind}>
+            <div key={ind}>
               <Entity>
                 <PolylineGraphics
                   show
@@ -138,7 +207,7 @@ function App() {
                 />
               </Entity>
             </div>
-          })}
+          )}
         </div>
         : <>Loading...</>}
       </Viewer>
