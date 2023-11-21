@@ -6,10 +6,12 @@ import "./App.css"
 // Earth's radius in meters
 const EARTH_R = 6378100;
 
+
 function App() {
-  const [array, setArray] = useState();
-  const [subset, setSubset] = useState();
-  const [adjMat, setAdjMat] = useState();
+  const [array, setArray] = useState([]);
+  const [subset, setSubset] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [adjMat, setAdjMat] = useState([[]]);
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(5);
 
@@ -18,12 +20,15 @@ function App() {
   }, [])
 
   useEffect(() => {
-    console.log(array);
     createSubarray();
   }, [array])
 
   useEffect(() => {
-    buildAdjMat()
+    buildAdjMat();
+    console.log(subset);
+    if(subset.length !== 0) {
+      setEdges([[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]);
+    }
   }, [subset])
 
   function calcDistance(lat1, lng1, lat2, lng2) {
@@ -31,13 +36,13 @@ function App() {
     let p2 = Cartesian3.fromDegrees(lng2, lat2)
     // great circle distance in km
     return (1 / 1000) * (EARTH_R * Math.acos(Cartesian3.dot(p1, p2) / (EARTH_R ** 2)))
-}
+  }
 
   function buildAdjMat() {
     let mat = Array.from(Array(subset.length), () => new Array(subset.length))
     for(let i = 0; i < subset.length; ++i) {
         for(let j = i + 1; j < subset.length; ++j) {
-            const dist = calcDistance(parseFloat(subset[i].lng), parseFloat(subset[i].lat), parseFloat(subset[j].lng), parseFloat(subset[j].lat))
+            const dist = calcDistance(subset[i].lng, subset[i].lat, subset[j].lng, subset[j].lat)
             mat[i][j] = dist
             mat[j][i] = dist
         }
@@ -50,7 +55,7 @@ function App() {
     let newSubset = array.slice(index, index + num);
     console.log(newSubset);
     setSubset(newSubset); //cap num at 300?
-    setIndex((index + num) % 41000); 
+    setIndex((index + num) % 41000);
     // why is array length only ~9000 instead of 44000
     console.log(array.length)
   }
@@ -60,6 +65,7 @@ function App() {
     const data = Papa.parse(await fetchCsv(), {
       skipEmptyLines: true,
       header: true,
+      dynamicTyping: true,
       complete: function(results) {
         setArray(results.data.sort(() => 0.5 - Math.random()));
       }
@@ -91,13 +97,13 @@ function App() {
             <div key={c.admin_name}>
               <Entity
                 name={c.city}
-                position={Cartesian3.fromDegrees(parseFloat(c.lng), parseFloat(c.lat))}
+                position={Cartesian3.fromDegrees(c.lng, c.lat)}
                 point={{ pixelSize: 20, color: Color.WHITE }}
                 label={{ text: `${c.city}, ${c.iso3} (${ind})`, 
                 font: '10px sans-serif', 
                 pixelOffset: new Cartesian2(20, 20) }}
               />
-              {subset.map((d) => {
+              {/* {subset.map((d) => {
                 return <div key={d.admin_name}>                
                   <Entity>
                     <PolylineGraphics
@@ -113,9 +119,26 @@ function App() {
                   </Entity> 
                 </div>
 
-              })}
+              })} */}
             </div>
           )}
+          {edges.map((edge, ind) =>
+            {return <div key={ind}>
+              <Entity>
+                <PolylineGraphics
+                  show
+                  width={5}
+                  positions={ 
+                    Cartesian3.fromDegreesArray(
+                      [subset[edge[0]].lng, subset[edge[0]].lat,
+                      subset[edge[1]].lng, subset[edge[1]].lat]
+                    )
+                  }
+                  material={Color.RED}
+                />
+              </Entity>
+            </div>
+          })}
         </div>
         : <>Loading...</>}
       </Viewer>
