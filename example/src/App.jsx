@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import "./App.css"
 
+
+//HELD-KARP ALGO
+
 const INF = 1e12;
 
 function makeArray(rows, cols, value) {
@@ -60,6 +63,9 @@ function heldKarp(adjMat) {
   }
   return [dp[1][0], edges];
 }
+
+
+//REACT CODE
 
 function App() {
   const [array, setArray] = useState([]);
@@ -137,7 +143,7 @@ function App() {
       dynamicTyping: true,
       complete: function(results) {
         // setArray(results.data.sort(() => 0.5 - Math.random())); //shuffles data
-        setArray(results.data); //shuffles data
+        setArray(results.data); //non-shuffled data (debug only)
       }
     });
     return data;
@@ -159,9 +165,8 @@ function App() {
         <button className='guiBut' onClick={() => createSubarray()}></button>
       </div>
       <Viewer className='viewer'>
-        {array && subset && distances?
+        {array && subset && adjMat && edges ?
 
-        {array && subset ?
         <div>
           {
           subset.map((c, ind, i) => 
