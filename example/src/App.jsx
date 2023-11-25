@@ -5,80 +5,102 @@ import Papa from 'papaparse';
 import "./App.css"
 
 
-//HELD-KARP ALGO
 
 const INF = 1e12;
-
-function makeArray(rows, cols, value) {
-  let arr = []
-  for(let i = 0; i < rows; ++i) {
-    let row = [];
-    for(let j = 0; j < cols; ++j) {
-      row.push(value)
-    }
-    arr.push(row);
-  }
-  return arr;
-}
-
-function inMask(mask, ind) {
-  return (mask & (1 << ind)) !== 0;
-}
-
-function heldKarp(adjMat) {
-  const n = adjMat.length;
-  let dp = makeArray(1 << n, n, INF);
-  let nxt = makeArray(1 << n, n, -1);
-  for(let i = (1 << n) - 1; i >= 0; --i) {
-    for(let j = 0; j < n; ++j) {
-      if(i == (1 << n) - 1) {
-        dp[i][j] = adjMat[j][0];
-        nxt[i][j] = 0;
-        continue;
-      }
-      if(!inMask(i, j))
-        continue;
-      for(let k = 0; k < n; ++k) {
-        if(inMask(i, k))
-          continue;
-        const alt = adjMat[j][k] + dp[i | (1 << k)][k];
-        if(alt < dp[i][j]) {
-          dp[i][j] = alt;
-          nxt[i][j] = k;
-        }
-      }
-    }
-  }
-  let edges = [];
-  let visited = 1;
-  let cur = 0;
-  while(true) {
-    let nxtNode = nxt[visited][cur];
-    edges.push([cur, nxtNode]);
-    if(nxtNode === 0) {
-      break;
-    }
-    visited |= (1 << nxtNode);
-    cur = nxtNode;
-  }
-  return [dp[1][0], edges];
-}
 
 
 //REACT CODE
 
 function App() {
+
+  //state vars
+
   const [array, setArray] = useState([]);
   const [subset, setSubset] = useState([]);
   const [edges, setEdges] = useState([]);
-  const [adjMat, setAdjMat] = useState([[]]);
+  const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(10);
+  const colors = [Color.WHITE, Color.GREEN];
+
+
+
+
+  //HELD-KARP ALGO
+
+  function makeArray(rows, cols, value) {
+    let arr = []
+    for(let i = 0; i < rows; ++i) {
+      let row = [];
+      for(let j = 0; j < cols; ++j) {
+        row.push(value)
+      }
+      arr.push(row);
+    }
+    return arr;
+  }
+  
+  function inMask(mask, ind) {
+    return (mask & (1 << ind)) !== 0;
+  }
+  
+  function heldKarp(adjMat) {
+    const n = adjMat.length;
+    let dp = makeArray(1 << n, n, INF);
+    let nxt = makeArray(1 << n, n, -1);
+    for(let i = (1 << n) - 1; i >= 0; --i) {
+      for(let j = 0; j < n; ++j) {
+        if(i == (1 << n) - 1) {
+          dp[i][j] = adjMat[j][0];
+          nxt[i][j] = 0;
+          continue;
+        }
+        if(!inMask(i, j))
+          continue;
+        for(let k = 0; k < n; ++k) {
+          if(inMask(i, k))
+            continue;
+          const alt = adjMat[j][k] + dp[i | (1 << k)][k];
+          if(alt < dp[i][j]) {
+            dp[i][j] = alt;
+            nxt[i][j] = k;
+          }
+        }
+      }
+    }
+    let temp = [];
+    let visited = 1;
+    let cur = 0;
+    while(true) {
+      let nxtNode = nxt[visited][cur];
+      temp.push([cur, nxtNode]);
+  
+      setEdges(...edges, edges[cur][nxtNode] = 2, edges[nxtNode][cur] = 2);
+      setTimeout(500);
+
+
+      if(nxtNode === 0) {
+        break;
+      }
+      visited |= (1 << nxtNode);
+      cur = nxtNode;
+    }
+    return [dp[1][0], temp];
+  }
+
+
+
+
+
+
+
+
 
   useEffect(() => { //on page load
     getData();
   }, [])
 
+  //build subarray on load
   useEffect(() => {
     if(array.length === 0)
       return;
@@ -86,6 +108,7 @@ function App() {
     createSubarray();
   }, [array])
 
+  //build adj matrix on load
   useEffect(() => {
     if(subset.length === 0) {
       return;
@@ -93,12 +116,16 @@ function App() {
     buildAdjMat();
   }, [subset])
 
+  //build edges on load
   useEffect(() => {
     if(subset.length === 0) {
       return;
     }
     const result = heldKarp(adjMat);
-    setEdges(result[1]);
+    console.log(edges);
+    // setEdges(result[1]);
+
+
   }, [adjMat])
 
   function distance(lat1, lon1, lat2, lon2) {
@@ -114,16 +141,21 @@ function App() {
 
   function buildAdjMat() {
     let mat = Array.from(Array(subset.length), () => new Array(subset.length))
+    let e = Array.from(Array(subset.length), () => new Array(subset.length))
     for(let i = 0; i < subset.length; ++i) {
-        for(let j = i + 1; j < subset.length; ++j) {
+        for(let j = i; j < subset.length; ++j) {
             const dist = distance(subset[i].lat, subset[i].lng, 
               subset[j].lat, subset[j].lng);
             mat[i][j] = dist;
             mat[j][i] = dist;
+            e[i][j] = -1;
+            e[j][i] = -1;
         }
     }
     console.log(mat)
+    console.log(e);
     setAdjMat(mat)
+    setEdges(e);
   }
 
   async function createSubarray() {
@@ -142,8 +174,8 @@ function App() {
       header: true,
       dynamicTyping: true,
       complete: function(results) {
-        // setArray(results.data.sort(() => 0.5 - Math.random())); //shuffles data
-        setArray(results.data); //non-shuffled data (debug only)
+        setArray(results.data.sort(() => 0.5 - Math.random())); //shuffles data
+        // setArray(results.data); //non-shuffled data (debug only)
       }
     });
     return data;
@@ -169,7 +201,7 @@ function App() {
 
         <div>
           {
-          subset.map((c, ind, i) => 
+          subset.map((c, ind) => 
             <div key={c.city}>
               <Entity
                 name={c.city}
@@ -199,22 +231,24 @@ function App() {
               })} */}
             </div>
           )}
-          {edges.map((edge, ind) =>
-            <div key={ind}>
+          {edges.map((edge, ind1) =>
+            {edge && edge.map && edge.map((e, ind2) => {
+              <div key={ind1 * num + ind2}>
               <Entity>
                 <PolylineGraphics
-                  show
+                  show={e != -1}
                   width={5}
                   positions={ 
                     Cartesian3.fromDegreesArray(
-                      [subset[edge[0]].lng, subset[edge[0]].lat,
-                      subset[edge[1]].lng, subset[edge[1]].lat]
+                      [subset[ind1].lng, subset[ind2].lat,
+                      subset[ind1].lng, subset[ind2].lat]
                     )
                   }
-                  material={Color.RED}
+                  material={e == -1 ? Color.BLACK : colors[e]}
                 />
               </Entity>
             </div>
+            })}
           )}
         </div>
         : <>Loading...</>}
