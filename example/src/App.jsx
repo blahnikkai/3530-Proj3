@@ -2,8 +2,8 @@ import { Cartesian2, Cartesian3, Color } from 'cesium'
 import { Viewer, Entity, PolylineGraphics } from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
+import { Donut } from 'react-dial-knob'
 import "./App.css"
-
 
 
 const INF = 1e12;
@@ -20,8 +20,8 @@ function App() {
   const [edges, setEdges] = useState([]);
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(5);
-  const colors = [Color.WHITE, Color.GREEN];
+  const [num, setNum] = useState(10);
+  const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
 
@@ -44,7 +44,7 @@ function App() {
     return (mask & (1 << ind)) !== 0;
   }
   
-  function heldKarp() {
+  async function heldKarp() {
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -75,9 +75,8 @@ function App() {
       let nxtNode = nxt[visited][cur];
       temp.push([cur, nxtNode]);
   
-      console.log(nxtNode, cur);
-      updateEdge(cur, nxtNode, 1);
-      // setTimeout(500);
+      updateEdge(cur, nxtNode, 1)
+      await sleep(500)
 
       if(nxtNode === 0) {
         break;
@@ -88,11 +87,18 @@ function App() {
     return [dp[1][0], temp];
   }
 
+
+  async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+
   function updateEdge(from, to, state) {
     const newEdges = [...edges];
     newEdges[from][to] = state;
     newEdges[to][from] = state;
     setEdges(newEdges);
+    setEdges([...edges, edges[from][to] = state, edges[to][from] = state]);
   }
 
 
@@ -166,6 +172,7 @@ function App() {
   }
 
   async function sampleCities() {
+    setEdges([]) //prevent program crash
     let sample = allCities.slice(index, index + num);
     console.log(sample);
     setCurCities(sample); //cap num at 300?
@@ -200,9 +207,34 @@ function App() {
 
   return (
     <div>
-      <div className='gui'>
-        <button className='guiBut' onClick={() => sampleCities()}>Load random cities</button>
-        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Held-Karp</button>
+    <div className='gui'>
+        <div className='gray-box-of-doom'>
+            
+          <Donut
+            diameter={80}
+            min={0}
+            max={20}
+            step={1}
+            value={num}
+            theme={{
+                donutColor: '#303336',
+                bgrColor: '#444',
+                maxedBgrColor: '#444',
+                centerColor: 'rgba(84, 84, 84, 1)',
+                centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                donutThickness: 10,   
+            }}
+            onValueChange={setNum}
+          >
+          </Donut>
+          <button className='nestedBut' onClick={() => createSubarray()}>Generate Cities</button>
+
+        </div>
+        <div className='arrow-up'></div>
+
+        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
       </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
@@ -262,6 +294,34 @@ function App() {
               </div>
               : <></>
           ))}
+
+          {edges.map((edge, ind1) => 
+
+            <div key={ind1}>
+              {edge && edge.map && edge.map((e, ind2) => 
+                {return ind1 > ind2 && e != -1 ? 
+                    // console.log(edge)
+                    // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
+                  <div key={ind1 * num + ind2}>
+                    <Entity>
+                      <PolylineGraphics
+                        show
+                        width={5}
+                        positions={ 
+                          Cartesian3.fromDegreesArray(
+                            [subset[ind1].lng, subset[ind1].lat,
+                            subset[ind2].lng, subset[ind2].lat]
+                          )
+                        }
+                        material={colors[e]}
+                      />
+                    </Entity>
+                  </div>
+                : <></>}
+              )}
+            </div>
+
+          )}
         </div>
         : <>Loading...</>}
       </Viewer>
