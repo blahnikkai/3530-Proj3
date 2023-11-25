@@ -2,8 +2,8 @@ import { Cartesian2, Cartesian3, Color } from 'cesium'
 import { Viewer, Entity, PolylineGraphics } from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
+import { Donut } from 'react-dial-knob'
 import "./App.css"
-
 
 
 const INF = 1e12;
@@ -197,9 +197,34 @@ function App() {
 
   return (
     <div>
-      <div className='gui'>
-        <button className='guiBut' onClick={() => createSubarray()}></button>
-        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}></button>
+    <div className='gui'>
+        <div className='gray-box-of-doom'>
+            
+          <Donut
+            diameter={80}
+            min={0}
+            max={20}
+            step={1}
+            value={num}
+            theme={{
+                donutColor: '#303336',
+                bgrColor: '#444',
+                maxedBgrColor: '#444',
+                centerColor: 'rgba(84, 84, 84, 1)',
+                centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                donutThickness: 10,   
+            }}
+            onValueChange={setNum}
+          >
+          </Donut>
+          <button className='nestedBut' onClick={() => createSubarray()}>Generate Cities</button>
+
+        </div>
+        <div className='arrow-up'></div>
+
+        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
       </div>
       <Viewer className='viewer'>
         {array && subset && adjMat && edges ?
