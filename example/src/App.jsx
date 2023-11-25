@@ -98,7 +98,6 @@ function App() {
     newEdges[from][to] = state;
     newEdges[to][from] = state;
     setEdges(newEdges);
-    setEdges([...edges, edges[from][to] = state, edges[to][from] = state]);
   }
 
 
@@ -161,8 +160,8 @@ function App() {
               curCities[j].lat, curCities[j].lng);
             mat[i][j] = dist;
             mat[j][i] = dist;
-            e[i][j] = 0;
-            e[j][i] = 0;
+            e[i][j] = -1;
+            e[j][i] = -1;
         }
     }
     console.log(mat)
@@ -200,7 +199,7 @@ function App() {
     const reader = response.body.getReader();
     const result = await reader.read();
     const decoder = new TextDecoder('utf-8');
-    const csv = await decoder.decode(result.value);
+    const csv = decoder.decode(result.value);
     return csv;
   }
 
@@ -227,7 +226,7 @@ function App() {
             onValueChange={setNum}
           >
           </Donut>
-          <button className='nestedBut' onClick={() => createSubarray()}>Generate Cities</button>
+          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
 
         </div>
         <div className='arrow-up'></div>
@@ -240,8 +239,7 @@ function App() {
         {allCities && curCities && adjMat && edges ?
 
         <div>
-          {
-          curCities.map((c, ind) => 
+          {curCities.map((c, ind) => 
             <div key={c.city}>
               <Entity
                 name={c.city}
@@ -252,51 +250,10 @@ function App() {
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
               />
-              {/* {subset.map((d) => {
-                return <div key={d.admin_name}>                
-                  <Entity>
-                    <PolylineGraphics
-                      show
-                      width={2}
-                      positions={ 
-                        Cartesian3.fromDegreesArray(
-                          [parseFloat(c.lng), parseFloat(c.lat), parseFloat(d.lng), parseFloat(d.lat)]
-                        )
-                      }
-                      material={Color.RED}
-                    />
-                  </Entity> 
-                </div>
-
-              })} */}
             </div>
           )}
-          {edges.map((edge, ind1) =>
-              edge.map((e, ind2) =>
-              ind1 < ind2 && e !== 0 ? 
-              // console.log(ind1, ind2, e, curCities[ind1].lng, curCities[ind1].lat, curCities[ind2].lng, curCities[ind1].lat) ||
-              <div key={ind1 * num + ind2}>
-                <Entity>
-                  <PolylineGraphics
-                    // show={e != -1}
-                    show
-                    width={5}
-                    positions={ 
-                      Cartesian3.fromDegreesArray(
-                        [curCities[ind1].lng, curCities[ind1].lat,
-                        curCities[ind2].lng, curCities[ind2].lat]
-                      )
-                    }
-                    // material={e == -1 ? Color.BLACK : colors[e]}
-                    material={Color.RED}
-                  />
-                </Entity>
-              </div>
-              : <></>
-          ))}
 
           {edges.map((edge, ind1) => 
-
             <div key={ind1}>
               {edge && edge.map && edge.map((e, ind2) => 
                 {return ind1 > ind2 && e != -1 ? 
@@ -309,8 +266,8 @@ function App() {
                         width={5}
                         positions={ 
                           Cartesian3.fromDegreesArray(
-                            [subset[ind1].lng, subset[ind1].lat,
-                            subset[ind2].lng, subset[ind2].lat]
+                            [curCities[ind1].lng, curCities[ind1].lat,
+                            curCities[ind2].lng, curCities[ind2].lat]
                           )
                         }
                         material={colors[e]}
@@ -320,8 +277,8 @@ function App() {
                 : <></>}
               )}
             </div>
-
           )}
+
         </div>
         : <>Loading...</>}
       </Viewer>
