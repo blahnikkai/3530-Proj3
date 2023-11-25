@@ -68,12 +68,10 @@ function App() {
         }
       }
     }
-    let temp = [];
     let visited = 1;
     let cur = 0;
     while(true) {
       let nxtNode = nxt[visited][cur];
-      temp.push([cur, nxtNode]);
   
       updateEdge(cur, nxtNode, 1)
       await sleep(500)
@@ -84,7 +82,7 @@ function App() {
       visited |= (1 << nxtNode);
       cur = nxtNode;
     }
-    return [dp[1][0], temp];
+    return dp[1][0];
   }
 
 
