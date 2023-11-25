@@ -20,7 +20,8 @@ function App() {
   const [edges, setEdges] = useState([]);
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(10);
+  const [num, setNum] = useState(5);
+  const [intervalId, setIntervalId] = useState();
   const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
@@ -45,8 +46,8 @@ function App() {
   }
   
   async function heldKarp() {
-    clearEdges();
-    await sleep(500);
+    clearInterval(intervalId);
+    let workingEdges = clearEdges();
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -72,28 +73,39 @@ function App() {
     }
     let visited = 1;
     let cur = 0;
-    while(true) {
+    function update() {
+      console.log('updated');
       let nxtNode = nxt[visited][cur];
   
-      updateEdge(cur, nxtNode, 1);
-      await sleep(500);
+      updateEdge(workingEdges, cur, nxtNode, 1);
 
       if(nxtNode === 0) {
-        break;
+        clearInterval(newIntervalId);
+        return;
       }
       visited |= (1 << nxtNode);
       cur = nxtNode;
     }
+    const newIntervalId = setInterval(() => update(), 500);
+    setIntervalId(newIntervalId);
     return dp[1][0];
   }
 
   async function nearestNeighbor() {
-    clearEdges();
-    await sleep(500);
+    clearInterval(intervalId);
+    let workingEdges = clearEdges();
     let cur = 0;
     let visited = new Set([0]);
     let totalDist = 0;
-    for(let i = 0; i < curCities.length - 1; ++i) {
+    let i = 0;
+    function update() {
+      if(i >= curCities.length - 1) {
+        // go back to start
+        updateEdge(workingEdges, cur, 0, 1);
+        totalDist += adjMat[cur][0];
+        clearInterval(newIntervalId);
+        return;
+      }
       let nearest = -1;
       let nearestDist = INF;
       for(let j = 0; j < curCities.length; ++j) {
@@ -102,30 +114,21 @@ function App() {
           nearestDist = adjMat[cur][j];
         }
       }
-      updateEdge(cur, nearest, 1);
-      await sleep(500);
+      updateEdge(workingEdges, cur, nearest, 1);
       visited.add(nearest);
       cur = nearest;
       totalDist += adjMat[cur][nearest];
+      ++i;
     }
-    // go back to start
-    updateEdge(cur, 0, 1);
-    await sleep(500);
-    totalDist += adjMat[cur][0];
+    const newIntervalId = setInterval(() => update(), 500);
+    setIntervalId(newIntervalId);
     return totalDist;
   }
 
-
-  async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
-
-  function updateEdge(from, to, state) {
-    const newEdges = [...edges];
-    newEdges[from][to] = state;
-    newEdges[to][from] = state;
-    setEdges(newEdges);
+  function updateEdge(workingEdges, from, to, state) {
+    workingEdges[from][to] = state;
+    workingEdges[to][from] = state;
+    setEdges([...workingEdges]);
   }
 
 
@@ -198,6 +201,7 @@ function App() {
     let e = makeArray(curCities.length, curCities.length, -1);
     console.log(e);
     setEdges(e);
+    return e;
   }
 
   async function sampleCities() {
