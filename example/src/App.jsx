@@ -21,7 +21,7 @@ function App() {
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(10);
-  const colors = [Color.WHITE, Color.GREEN];
+  const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
 
@@ -44,7 +44,7 @@ function App() {
     return (mask & (1 << ind)) !== 0;
   }
   
-  function heldKarp() {
+  async function heldKarp() {
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -71,13 +71,17 @@ function App() {
     let temp = [];
     let visited = 1;
     let cur = 0;
+    let i = 0;
     while(true) {
+      i++;
       let nxtNode = nxt[visited][cur];
       temp.push([cur, nxtNode]);
   
-      // updateEdge(cur, nxtNode, 2);
-      setEdges([...edges, edges[nxtNode][cur] = 1, edges[cur][nxtNode] = 1]);
-      setTimeout(500);
+      console.log("ALGO", cur, nxtNode);
+      // setTimeout(() => { updateEdge(cur, nxtNode, 1); }, i*500);
+      updateEdge(cur, nxtNode, 1)
+      await sleep(500)
+      // setEdges([...edges, edges[nxtNode][cur] = 1, edges[cur][nxtNode] = 1]);
 
       if(nxtNode === 0) {
         break;
@@ -88,8 +92,15 @@ function App() {
     return [dp[1][0], temp];
   }
 
+
+  async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+
   function updateEdge(from, to, state) {
-    setEdges(...edges, edges[from][to] = state, edges[to][from] = state);
+    console.log("FUNC", from, to);
+    setEdges([...edges, edges[from][to] = state, edges[to][from] = state]);
   }
 
 
@@ -261,31 +272,33 @@ function App() {
               })} */}
             </div>
           )}
-          {edges.map((edge, ind1) =>
-            {
-              edge && edge.map && edge.map((e, ind2) => {
-              ind1 > ind2 && e != -1 ? 
-                // console.log(edge)
-                // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
-              <div key={ind1 * num + ind2}>
-                <Entity>
-                  <PolylineGraphics
-                    // show={e != -1}
-                    show={true}
-                    width={5}
-                    positions={ 
-                      Cartesian3.fromDegreesArray(
-                        [subset[ind1].lng, subset[ind1].lat,
-                        subset[ind2].lng, subset[ind2].lat]
-                      )
-                    }
-                    // material={e == -1 ? Color.BLACK : colors[e]}
-                    material={Color.RED}
-                  />
-                </Entity>
-              </div>
-              : <></>
-            })}
+
+          {edges.map((edge, ind1) => 
+
+            <div key={ind1}>
+              {edge && edge.map && edge.map((e, ind2) => 
+                {return ind1 > ind2 && e != -1 ? 
+                    // console.log(edge)
+                    // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
+                  <div key={ind1 * num + ind2}>
+                    <Entity>
+                      <PolylineGraphics
+                        show
+                        width={5}
+                        positions={ 
+                          Cartesian3.fromDegreesArray(
+                            [subset[ind1].lng, subset[ind1].lat,
+                            subset[ind2].lng, subset[ind2].lat]
+                          )
+                        }
+                        material={colors[e]}
+                      />
+                    </Entity>
+                  </div>
+                : <></>}
+              )}
+            </div>
+
           )}
         </div>
         : <>Loading...</>}

@@ -53,6 +53,7 @@ html, body, #cesiumContainer {
   font-style: bold;
 }
 
+/* https://css-tricks.com/snippets/css/css-triangle/ */
 .arrow-up {
   position: absolute;
   width: 0; 
