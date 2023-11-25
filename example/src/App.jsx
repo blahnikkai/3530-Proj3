@@ -44,7 +44,7 @@ function App() {
     return (mask & (1 << ind)) !== 0;
   }
   
-  function heldKarp(adjMat) {
+  function heldKarp() {
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -75,9 +75,9 @@ function App() {
       let nxtNode = nxt[visited][cur];
       temp.push([cur, nxtNode]);
   
-      setEdges(...edges, edges[cur][nxtNode] = 2, edges[nxtNode][cur] = 2);
+      // updateEdge(cur, nxtNode, 2);
+      setEdges([...edges, edges[nxtNode][cur] = 2, edges[cur][nxtNode] = 2]);
       setTimeout(500);
-
 
       if(nxtNode === 0) {
         break;
@@ -86,6 +86,10 @@ function App() {
       cur = nxtNode;
     }
     return [dp[1][0], temp];
+  }
+
+  function updateEdge(from, to, state) {
+    setEdges(...edges, edges[from][to] = state, edges[to][from] = state);
   }
 
 
@@ -117,16 +121,16 @@ function App() {
   }, [subset])
 
   //build edges on load
-  useEffect(() => {
-    if(subset.length === 0) {
-      return;
-    }
-    const result = heldKarp(adjMat);
-    console.log(edges);
-    // setEdges(result[1]);
+  // useEffect(() => {
+  //   if(subset.length === 0) {
+  //     return;
+  //   }
+  //   const result = heldKarp(adjMat);
+  //   console.log(edges);
+  //   // setEdges(result[1]);
 
 
-  }, [adjMat])
+  // }, [adjMat, edges])
 
   function distance(lat1, lon1, lat2, lon2) {
     const r = 6371; // km
@@ -195,6 +199,7 @@ function App() {
     <div>
       <div className='gui'>
         <button className='guiBut' onClick={() => createSubarray()}></button>
+        <button className='guiBut' onClick={() => heldKarp()}></button>
       </div>
       <Viewer className='viewer'>
         {array && subset && adjMat && edges ?
@@ -232,19 +237,24 @@ function App() {
             </div>
           )}
           {edges.map((edge, ind1) =>
-            {edge && edge.map && edge.map((e, ind2) => {
+            {
+              edge && edge.map && edge.map((e, ind2) => {
+                // console.log(edge)
+                console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
               <div key={ind1 * num + ind2}>
               <Entity>
                 <PolylineGraphics
-                  show={e != -1}
+                  // show={e != -1}
+                  show={true}
                   width={5}
                   positions={ 
                     Cartesian3.fromDegreesArray(
-                      [subset[ind1].lng, subset[ind2].lat,
-                      subset[ind1].lng, subset[ind2].lat]
+                      [subset[ind1].lng, subset[ind1].lat,
+                      subset[ind2].lng, subset[ind2].lat]
                     )
                   }
-                  material={e == -1 ? Color.BLACK : colors[e]}
+                  // material={e == -1 ? Color.BLACK : colors[e]}
+                  material={Color.RED}
                 />
               </Entity>
             </div>
