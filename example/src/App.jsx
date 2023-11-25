@@ -71,17 +71,12 @@ function App() {
     let temp = [];
     let visited = 1;
     let cur = 0;
-    let i = 0;
     while(true) {
-      i++;
       let nxtNode = nxt[visited][cur];
       temp.push([cur, nxtNode]);
   
-      console.log("ALGO", cur, nxtNode);
-      // setTimeout(() => { updateEdge(cur, nxtNode, 1); }, i*500);
       updateEdge(cur, nxtNode, 1)
       await sleep(500)
-      // setEdges([...edges, edges[nxtNode][cur] = 1, edges[cur][nxtNode] = 1]);
 
       if(nxtNode === 0) {
         break;
@@ -99,7 +94,6 @@ function App() {
   
 
   function updateEdge(from, to, state) {
-    console.log("FUNC", from, to);
     setEdges([...edges, edges[from][to] = state, edges[to][from] = state]);
   }
 
@@ -174,6 +168,7 @@ function App() {
   }
 
   async function createSubarray() {
+    setEdges([]) //prevent program crash
     let newSubset = array.slice(index, index + num);
     console.log(newSubset);
     setSubset(newSubset); //cap num at 300?
