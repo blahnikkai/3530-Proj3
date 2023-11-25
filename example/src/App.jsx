@@ -15,12 +15,12 @@ function App() {
 
   //state vars
 
-  const [array, setArray] = useState([]);
-  const [subset, setSubset] = useState([]);
+  const [allCities, setAllCities] = useState([]);
+  const [curCities, setCurCities] = useState([]);
   const [edges, setEdges] = useState([]);
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(10);
+  const [num, setNum] = useState(5);
   const colors = [Color.WHITE, Color.GREEN];
 
 
@@ -75,9 +75,9 @@ function App() {
       let nxtNode = nxt[visited][cur];
       temp.push([cur, nxtNode]);
   
-      // updateEdge(cur, nxtNode, 2);
-      setEdges([...edges, edges[nxtNode][cur] = 1, edges[cur][nxtNode] = 1]);
-      setTimeout(500);
+      console.log(nxtNode, cur);
+      updateEdge(cur, nxtNode, 1);
+      // setTimeout(500);
 
       if(nxtNode === 0) {
         break;
@@ -89,7 +89,10 @@ function App() {
   }
 
   function updateEdge(from, to, state) {
-    setEdges(...edges, edges[from][to] = state, edges[to][from] = state);
+    const newEdges = [...edges];
+    newEdges[from][to] = state;
+    newEdges[to][from] = state;
+    setEdges(newEdges);
   }
 
 
@@ -99,28 +102,28 @@ function App() {
 
 
 
-
-  useEffect(() => { //on page load
+  // load city data and build allCities on page load
+  useEffect(() => {
     getData();
   }, [])
 
-  //build subarray on load
+  // build curCities on allCities load
   useEffect(() => {
-    if(array.length === 0)
+    if(allCities.length === 0)
       return;
-    console.log(array);
-    createSubarray();
-  }, [array])
+    // console.log(allCities);
+    sampleCities();
+  }, [allCities])
 
-  //build adj matrix on load
+  // build adj matrix on load
   useEffect(() => {
-    if(subset.length === 0) {
+    if(curCities.length === 0) {
       return;
     }
     buildAdjMat();
-  }, [subset])
+  }, [curCities])
 
-  //build edges on load
+  // build edges on load
   // useEffect(() => {
   //   if(subset.length === 0) {
   //     return;
@@ -144,16 +147,16 @@ function App() {
   }
 
   function buildAdjMat() {
-    let mat = Array.from(Array(subset.length), () => new Array(subset.length))
-    let e = Array.from(Array(subset.length), () => new Array(subset.length))
-    for(let i = 0; i < subset.length; ++i) {
-        for(let j = i; j < subset.length; ++j) {
-            const dist = distance(subset[i].lat, subset[i].lng, 
-              subset[j].lat, subset[j].lng);
+    let mat = makeArray(curCities.length, curCities.length, 0);
+    let e = makeArray(curCities.length, curCities.length, 0);
+    for(let i = 0; i < curCities.length; ++i) {
+        for(let j = i; j < curCities.length; ++j) {
+            const dist = distance(curCities[i].lat, curCities[i].lng, 
+              curCities[j].lat, curCities[j].lng);
             mat[i][j] = dist;
             mat[j][i] = dist;
-            e[i][j] = -1;
-            e[j][i] = -1;
+            e[i][j] = 0;
+            e[j][i] = 0;
         }
     }
     console.log(mat)
@@ -162,10 +165,10 @@ function App() {
     setEdges(e);
   }
 
-  async function createSubarray() {
-    let newSubset = array.slice(index, index + num);
-    console.log(newSubset);
-    setSubset(newSubset); //cap num at 300?
+  async function sampleCities() {
+    let sample = allCities.slice(index, index + num);
+    console.log(sample);
+    setCurCities(sample); //cap num at 300?
     setIndex((index + num) % 41000);
     // why is array length only ~9000 instead of 44000
     // console.log(array.length);
@@ -178,7 +181,7 @@ function App() {
       header: true,
       dynamicTyping: true,
       complete: function(results) {
-        setArray(results.data.sort(() => 0.5 - Math.random())); //shuffles data
+        setAllCities(results.data.sort(() => 0.5 - Math.random())); //shuffles data
         // setArray(results.data); //non-shuffled data (debug only)
       }
     });
@@ -198,15 +201,15 @@ function App() {
   return (
     <div>
       <div className='gui'>
-        <button className='guiBut' onClick={() => createSubarray()}></button>
-        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}></button>
+        <button className='guiBut' onClick={() => sampleCities()}>Load random cities</button>
+        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Held-Karp</button>
       </div>
       <Viewer className='viewer'>
-        {array && subset && adjMat && edges ?
+        {allCities && curCities && adjMat && edges ?
 
         <div>
           {
-          subset.map((c, ind) => 
+          curCities.map((c, ind) => 
             <div key={c.city}>
               <Entity
                 name={c.city}
@@ -237,21 +240,19 @@ function App() {
             </div>
           )}
           {edges.map((edge, ind1) =>
-            {
-              edge && edge.map && edge.map((e, ind2) => {
-              ind1 > ind2 && e != -1 ? 
-                // console.log(edge)
-                // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
+              edge.map((e, ind2) =>
+              ind1 < ind2 && e !== 0 ? 
+              // console.log(ind1, ind2, e, curCities[ind1].lng, curCities[ind1].lat, curCities[ind2].lng, curCities[ind1].lat) ||
               <div key={ind1 * num + ind2}>
                 <Entity>
                   <PolylineGraphics
                     // show={e != -1}
-                    show={true}
+                    show
                     width={5}
                     positions={ 
                       Cartesian3.fromDegreesArray(
-                        [subset[ind1].lng, subset[ind1].lat,
-                        subset[ind2].lng, subset[ind2].lat]
+                        [curCities[ind1].lng, curCities[ind1].lat,
+                        curCities[ind2].lng, curCities[ind2].lat]
                       )
                     }
                     // material={e == -1 ? Color.BLACK : colors[e]}
@@ -260,8 +261,7 @@ function App() {
                 </Entity>
               </div>
               : <></>
-            })}
-          )}
+          ))}
         </div>
         : <>Loading...</>}
       </Viewer>
