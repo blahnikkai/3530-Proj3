@@ -76,7 +76,7 @@ function App() {
       temp.push([cur, nxtNode]);
   
       // updateEdge(cur, nxtNode, 2);
-      setEdges([...edges, edges[nxtNode][cur] = 2, edges[cur][nxtNode] = 2]);
+      setEdges([...edges, edges[nxtNode][cur] = 1, edges[cur][nxtNode] = 1]);
       setTimeout(500);
 
       if(nxtNode === 0) {
