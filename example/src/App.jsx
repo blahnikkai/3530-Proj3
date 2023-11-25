@@ -69,7 +69,7 @@ function App() {
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(10);
 
-  useEffect(() => {
+  useEffect(() => { //on page load
     getData();
   }, [])
 
@@ -136,7 +136,8 @@ function App() {
       header: true,
       dynamicTyping: true,
       complete: function(results) {
-        setArray(results.data.sort(() => 0.5 - Math.random()));
+        // setArray(results.data.sort(() => 0.5 - Math.random())); //shuffles data
+        setArray(results.data); //shuffles data
       }
     });
     return data;
@@ -151,7 +152,6 @@ function App() {
     return csv;
   }
 
-//   const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
 
   return (
     <div>
@@ -159,9 +159,12 @@ function App() {
         <button className='guiBut' onClick={() => createSubarray()}></button>
       </div>
       <Viewer className='viewer'>
+        {array && subset && distances?
+
         {array && subset ?
         <div>
-          {subset.map((c, ind) => 
+          {
+          subset.map((c, ind, i) => 
             <div key={c.city}>
               <Entity
                 name={c.city}
@@ -177,7 +180,7 @@ function App() {
                   <Entity>
                     <PolylineGraphics
                       show
-                      width={5}
+                      width={2}
                       positions={ 
                         Cartesian3.fromDegreesArray(
                           [parseFloat(c.lng), parseFloat(c.lat), parseFloat(d.lng), parseFloat(d.lat)]
@@ -221,29 +224,3 @@ export default App;
 
 
 
-
-// import React, { useState, useEffect } from "react";
-// import { Cartesian3, Color } from "cesium";
-// import { Viewer, Entity, PolylineGraphics } from "resium";
-
-// const positions = Cartesian3.fromDegreesArrayHeights([0, 0, 1000, 100, 100, 1000]);
-
-// const App = () => {
-
-
-//   return (
-//     <Viewer full>
-//       <Entity>
-//         <PolylineGraphics
-//           show
-//           width={3}
-//           material={Color.RED}
-//           positions={positions}
-//         />
-//       </Entity>
-//       <div style={{ position: "absolute", left: "0", top: "0", color: "#fff" }}>{0}</div>
-//     </Viewer>
-//   );
-// };
-
-// export default App;
