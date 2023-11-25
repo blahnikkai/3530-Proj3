@@ -199,7 +199,7 @@ function App() {
     <div>
       <div className='gui'>
         <button className='guiBut' onClick={() => createSubarray()}></button>
-        <button className='guiBut' onClick={() => heldKarp()}></button>
+        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}></button>
       </div>
       <Viewer className='viewer'>
         {array && subset && adjMat && edges ?
@@ -239,25 +239,27 @@ function App() {
           {edges.map((edge, ind1) =>
             {
               edge && edge.map && edge.map((e, ind2) => {
+              ind1 > ind2 && e != -1 ? 
                 // console.log(edge)
-                console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
+                // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
               <div key={ind1 * num + ind2}>
-              <Entity>
-                <PolylineGraphics
-                  // show={e != -1}
-                  show={true}
-                  width={5}
-                  positions={ 
-                    Cartesian3.fromDegreesArray(
-                      [subset[ind1].lng, subset[ind1].lat,
-                      subset[ind2].lng, subset[ind2].lat]
-                    )
-                  }
-                  // material={e == -1 ? Color.BLACK : colors[e]}
-                  material={Color.RED}
-                />
-              </Entity>
-            </div>
+                <Entity>
+                  <PolylineGraphics
+                    // show={e != -1}
+                    show={true}
+                    width={5}
+                    positions={ 
+                      Cartesian3.fromDegreesArray(
+                        [subset[ind1].lng, subset[ind1].lat,
+                        subset[ind2].lng, subset[ind2].lat]
+                      )
+                    }
+                    // material={e == -1 ? Color.BLACK : colors[e]}
+                    material={Color.RED}
+                  />
+                </Entity>
+              </div>
+              : <></>
             })}
           )}
         </div>
