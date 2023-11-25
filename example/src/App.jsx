@@ -29,7 +29,7 @@ function App() {
   //HELD-KARP ALGO
 
   function makeArray(rows, cols, value) {
-    let arr = []
+    let arr = [];
     for(let i = 0; i < rows; ++i) {
       let row = [];
       for(let j = 0; j < cols; ++j) {
@@ -45,6 +45,8 @@ function App() {
   }
   
   async function heldKarp() {
+    clearEdges();
+    await sleep(500);
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -73,8 +75,8 @@ function App() {
     while(true) {
       let nxtNode = nxt[visited][cur];
   
-      updateEdge(cur, nxtNode, 1)
-      await sleep(500)
+      updateEdge(cur, nxtNode, 1);
+      await sleep(500);
 
       if(nxtNode === 0) {
         break;
@@ -83,6 +85,34 @@ function App() {
       cur = nxtNode;
     }
     return dp[1][0];
+  }
+
+  async function nearestNeighbor() {
+    clearEdges();
+    await sleep(500);
+    let cur = 0;
+    let visited = new Set([0]);
+    let totalDist = 0;
+    for(let i = 0; i < curCities.length - 1; ++i) {
+      let nearest = -1;
+      let nearestDist = INF;
+      for(let j = 0; j < curCities.length; ++j) {
+        if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
+          nearest = j;
+          nearestDist = adjMat[cur][j];
+        }
+      }
+      updateEdge(cur, nearest, 1);
+      await sleep(500);
+      visited.add(nearest);
+      cur = nearest;
+      totalDist += adjMat[cur][nearest];
+    }
+    // go back to start
+    updateEdge(cur, 0, 1);
+    await sleep(500);
+    totalDist += adjMat[cur][0];
+    return totalDist;
   }
 
 
@@ -124,6 +154,7 @@ function App() {
       return;
     }
     buildAdjMat();
+    clearEdges();
   }, [curCities])
 
   // build edges on load
@@ -151,25 +182,26 @@ function App() {
 
   function buildAdjMat() {
     let mat = makeArray(curCities.length, curCities.length, 0);
-    let e = makeArray(curCities.length, curCities.length, 0);
     for(let i = 0; i < curCities.length; ++i) {
         for(let j = i; j < curCities.length; ++j) {
             const dist = distance(curCities[i].lat, curCities[i].lng, 
               curCities[j].lat, curCities[j].lng);
             mat[i][j] = dist;
             mat[j][i] = dist;
-            e[i][j] = -1;
-            e[j][i] = -1;
         }
     }
     console.log(mat)
-    console.log(e);
     setAdjMat(mat)
+  }
+
+  function clearEdges() {
+    let e = makeArray(curCities.length, curCities.length, -1);
+    console.log(e);
     setEdges(e);
   }
 
   async function sampleCities() {
-    setEdges([]) //prevent program crash
+    clearEdges();
     let sample = allCities.slice(index, index + num);
     console.log(sample);
     setCurCities(sample); //cap num at 300?
@@ -230,7 +262,7 @@ function App() {
         <div className='arrow-up'></div>
 
         <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
-        <button className='guiBut' onClick={() => {}}>Temporary button</button>
+        <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
         <button className='guiBut' onClick={() => {}}>Temporary button</button>
       </div>
       <Viewer className='viewer'>
