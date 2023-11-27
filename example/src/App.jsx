@@ -268,6 +268,32 @@ function App() {
         <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
         <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
         <button className='guiBut' onClick={() => {}}>Temporary button</button>
+
+        <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
+
+        <div className='arrow-down'></div>
+        <div className='gray-box-of-doom-2'>
+          <div className='knobLabel'>Animation speed:</div>
+          <Donut
+            diameter={80}
+            min={0}
+            max={20}
+            step={1}
+            value={num}
+            theme={{
+                donutColor: '#303336',
+                bgrColor: '#444',
+                maxedBgrColor: '#444',
+                centerColor: 'rgba(84, 84, 84, 1)',
+                centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                donutThickness: 10,   
+            }}
+            onValueChange={setNum}
+          >
+          </Donut>
+
+        </div>
       </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
