@@ -1,5 +1,5 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium'
-import { Viewer, Entity, PolylineGraphics } from "resium";
+import { Viewer, Entity, PolylineGraphics} from "resium";
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob'
@@ -22,6 +22,7 @@ function App() {
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(5);
   const [intervalId, setIntervalId] = useState();
+  const [animationSpeed, setAnimationSpeed] = useState(3);
   const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
@@ -80,13 +81,12 @@ function App() {
       updateEdge(workingEdges, cur, nxtNode, 1);
 
       if(nxtNode === 0) {
-        clearInterval(newIntervalId);
         return;
       }
       visited |= (1 << nxtNode);
-      cur = nxtNode;
+      cur = nxtNode;    
     }
-    const newIntervalId = setInterval(() => update(), 500);
+    const newIntervalId = setInterval(() => update(), 1500/animationSpeed);
     setIntervalId(newIntervalId);
     return dp[1][0];
   }
@@ -120,7 +120,7 @@ function App() {
       totalDist += adjMat[cur][nearest];
       ++i;
     }
-    const newIntervalId = setInterval(() => update(), 500);
+    const newIntervalId = setInterval(() => update(), 1500/animationSpeed);
     setIntervalId(newIntervalId);
     return totalDist;
   }
@@ -206,6 +206,7 @@ function App() {
 
   async function sampleCities() {
     clearEdges();
+    clearInterval(intervalId);
     let sample = allCities.slice(index, index + num);
     console.log(sample);
     setCurCities(sample); //cap num at 300?
@@ -240,61 +241,61 @@ function App() {
 
   return (
     <div>
-    <div className='gui'>
-        <div className='gray-box-of-doom'>
-            
-          <Donut
-            diameter={80}
-            min={0}
-            max={20}
-            step={1}
-            value={num}
-            theme={{
-                donutColor: '#303336',
-                bgrColor: '#444',
-                maxedBgrColor: '#444',
-                centerColor: 'rgba(84, 84, 84, 1)',
-                centerFocusedColor: 'rgba(84, 84, 84, 1)',
-                donutThickness: 10,   
-            }}
-            onValueChange={setNum}
-          >
-          </Donut>
-          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
+      <div className='gui'>
+          <div className='gray-box-of-doom'>
+              
+            <Donut
+              diameter={80}
+              min={0}
+              max={20}
+              step={1}
+              value={num}
+              theme={{
+                  donutColor: '#303336',
+                  bgrColor: '#444',
+                  maxedBgrColor: '#444',
+                  centerColor: 'rgba(84, 84, 84, 1)',
+                  centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                  donutThickness: 10,   
+              }}
+              onValueChange={setNum}
+            >
+            </Donut>
+            <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
 
+          </div>
+          <div className='arrow-up'></div>
+
+          <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
+          <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
+          <button className='guiBut' onClick={() => {}}>Temporary button</button>
+
+          <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
+          <button className='guiBut' onClick={() => {}}>Temporary button</button>
+
+          <div className='arrow-down'></div>
+          <div className='gray-box-of-doom-2'>
+            <div className='knobLabel'>Animation speed:</div>
+            <Donut
+              diameter={80}
+              min={0}
+              max={10}
+              step={1}
+              value={animationSpeed}
+              theme={{
+                  donutColor: '#303336',
+                  bgrColor: '#444',
+                  maxedBgrColor: '#444',
+                  centerColor: 'rgba(84, 84, 84, 1)',
+                  centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                  donutThickness: 10,   
+              }}
+              onValueChange={setAnimationSpeed}
+            >
+            </Donut>
+
+          </div>
         </div>
-        <div className='arrow-up'></div>
-
-        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
-        <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
-        <button className='guiBut' onClick={() => {}}>Temporary button</button>
-
-        <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
-        <button className='guiBut' onClick={() => {}}>Temporary button</button>
-
-        <div className='arrow-down'></div>
-        <div className='gray-box-of-doom-2'>
-          <div className='knobLabel'>Animation speed:</div>
-          <Donut
-            diameter={80}
-            min={0}
-            max={20}
-            step={1}
-            value={num}
-            theme={{
-                donutColor: '#303336',
-                bgrColor: '#444',
-                maxedBgrColor: '#444',
-                centerColor: 'rgba(84, 84, 84, 1)',
-                centerFocusedColor: 'rgba(84, 84, 84, 1)',
-                donutThickness: 10,   
-            }}
-            onValueChange={setNum}
-          >
-          </Donut>
-
-        </div>
-      </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
 
@@ -309,6 +310,7 @@ function App() {
                   font: '10px sans-serif', 
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
+                // onClick={() => console.log("HI")}
               />
             </div>
           )}
@@ -342,7 +344,6 @@ function App() {
         </div>
         : <>Loading...</>}
       </Viewer>
-
     </div>
   );
 }
