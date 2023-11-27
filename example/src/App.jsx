@@ -22,6 +22,10 @@ function App() {
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(5);
   const [intervalId, setIntervalId] = useState();
+  const [heldKarpDist, setHeldKarpDist] = useState(undefined);
+  // const [heldKarpTime, setHeldKarpTime] = useState(undefined);
+  const [nearestNeighborDist, setNearestNeighborDist] = useState(undefined);
+  //const [nearestNeighborTime, setNearestNeighborTime] = useState(undefined);
   const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
@@ -88,6 +92,7 @@ function App() {
     }
     const newIntervalId = setInterval(() => update(), 500);
     setIntervalId(newIntervalId);
+    console.log(dp[1][0])
     return dp[1][0];
   }
 
@@ -98,30 +103,34 @@ function App() {
     let visited = new Set([0]);
     let totalDist = 0;
     let i = 0;
-    function update() {
-      if(i >= curCities.length - 1) {
-        // go back to start
-        updateEdge(workingEdges, cur, 0, 1);
-        totalDist += adjMat[cur][0];
-        clearInterval(newIntervalId);
-        return;
-      }
-      let nearest = -1;
-      let nearestDist = INF;
-      for(let j = 0; j < curCities.length; ++j) {
-        if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
-          nearest = j;
-          nearestDist = adjMat[cur][j];
-        }
-      }
-      updateEdge(workingEdges, cur, nearest, 1);
-      visited.add(nearest);
-      cur = nearest;
-      totalDist += adjMat[cur][nearest];
-      ++i;
-    }
-    const newIntervalId = setInterval(() => update(), 500);
-    setIntervalId(newIntervalId);
+    async function make_path() {
+      return new Promise((resolve) => {
+        const newIntervalId = setInterval(() => {
+          if(i >= curCities.length - 1) {
+            // go back to start
+            updateEdge(workingEdges, cur, 0, 1);
+            totalDist += adjMat[cur][0];
+            clearInterval(newIntervalId);
+            resolve();
+            return;
+          }
+          let nearest = -1;
+          let nearestDist = INF;
+          for(let j = 0; j < curCities.length; ++j) {
+            if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
+              nearest = j;
+              nearestDist = adjMat[cur][j];
+            }
+          }
+          updateEdge(workingEdges, cur, nearest, 1);
+          visited.add(nearest);
+          totalDist += adjMat[cur][nearest];
+          cur = nearest;
+          ++i;
+        }, 500);
+      setIntervalId(newIntervalId);
+    })}
+    await make_path();
     return totalDist;
   }
 
@@ -206,6 +215,8 @@ function App() {
 
   async function sampleCities() {
     clearEdges();
+    setHeldKarpDist(undefined);
+    setNearestNeighborDist(undefined);
     let sample = allCities.slice(index, index + num);
     console.log(sample);
     setCurCities(sample); //cap num at 300?
@@ -240,34 +251,60 @@ function App() {
 
   return (
     <div>
-    <div className='gui'>
-        <div className='gray-box-of-doom'>
-            
-          <Donut
-            diameter={80}
-            min={0}
-            max={20}
-            step={1}
-            value={num}
-            theme={{
-                donutColor: '#303336',
-                bgrColor: '#444',
-                maxedBgrColor: '#444',
-                centerColor: 'rgba(84, 84, 84, 1)',
-                centerFocusedColor: 'rgba(84, 84, 84, 1)',
-                donutThickness: 10,   
-            }}
-            onValueChange={setNum}
-          >
-          </Donut>
-          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
-
-        </div>
+        <div className='gui'>
+            <div className='gray-box-of-doom'>
+                <Donut
+                    diameter={80}
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={num}
+                    theme={{
+                        donutColor: '#303336',
+                        bgrColor: '#444',
+                        maxedBgrColor: '#444',
+                        centerColor: 'rgba(84, 84, 84, 1)',
+                        centerFocusedColor: 'rgba(84, 84, 84, 1)',
+                        donutThickness: 10,   
+                    }}
+                    onValueChange={setNum}
+                >
+                </Donut>
+                <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
+            </div>
         <div className='arrow-up'></div>
-
-        <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
-        <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
+        <button className='guiBut' 
+          onClick={async () => {
+            const dist = await heldKarp();
+            console.log(dist);
+            setHeldKarpDist(dist); 
+            console.log(edges);
+          }}
+          >
+          Run Held-Karp algorithm
+        </button>
+        <button className='guiBut' 
+          onClick={async () => {
+            const dist = await nearestNeighbor();
+            console.log(dist);
+            setNearestNeighborDist(dist);
+            console.log(edges)
+          }}
+          >
+            Nearest Neighbor
+          </button>
         <button className='guiBut' onClick={() => {}}>Temporary button</button>
+      </div>
+      <div className='resultsGrid'>
+        <div>Algorithm</div>
+        <div>Distance (km)</div>
+        <div>Time (sec)</div>
+        <div>Held-Karp</div>
+        <div>{heldKarpDist ? heldKarpDist.toFixed(2) : ''}</div>
+        <div>Slower</div>
+        <div>Nearest Neighbor</div>
+        <div>{nearestNeighborDist ? nearestNeighborDist.toFixed(2) : ''}</div>
+        <div>Faster</div>
       </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
