@@ -209,6 +209,7 @@ function App() {
   async function sampleCities() {
     clearEdges();
     setUserSelection([]);
+    setCityHover(-1);
     clearInterval(intervalId);
     let sample = allCities.slice(index, index + num);
     console.log(sample);
@@ -291,7 +292,7 @@ function App() {
 
           <div className='arrow-down'></div>
           <div className='gray-box-of-doom-2'>
-            <div className='knobLabel'>Animation speed:</div>
+            <div className='knobLabel'>Animation <br/> speed:</div>
             <Donut
               diameter={80}
               min={0}
@@ -321,9 +322,9 @@ function App() {
               <Entity
                 name={c.city}
                 position={Cartesian3.fromDegrees(c.lng, c.lat)}
-                point={{ pixelSize: 20, color: cityHover == ind ? Color.WHITE : Color.LIGHTGRAY}}
-                label={{ text: `${c.city}, ${c.iso3} (${ind})`, 
-                  font: cityHover == ind ? 'sans-serif bold 20px' : '10px sans-serif', 
+                point={{ pixelSize: 20, color: cityHover == ind ? Color.SKYBLUE : Color.WHITE}}
+                label={{ text: `${c.city}, ${c.iso3}`, 
+                  font: cityHover == ind ? '16px Victor Mono, monospace' : '12px Victor Mono', 
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
                 onClick={() => addToSelection(ind)}
