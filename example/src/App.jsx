@@ -192,7 +192,6 @@ function App() {
     const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
                   + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
                     (1 - Math.cos((lon2 - lon1) * p)) / 2;
-  
     return 2 * r * Math.asin(Math.sqrt(a));
   }
 
@@ -206,8 +205,8 @@ function App() {
             mat[j][i] = dist;
         }
     }
-    console.log(mat)
-    setAdjMat(mat)
+    console.log(mat);
+    setAdjMat(mat);
   }
 
   function clearEdges() {
@@ -274,11 +273,10 @@ function App() {
   }
 
   function calcUserDist() {
-    var sum = 0;
+    let sum = 0;
     userSelection.map((val, ind) => {
-      if (ind != 0) {
-        sum += distance(curCities[val].lng, curCities[val].lat,
-          curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat);
+      if(ind != 0) {
+        sum += adjMat[val][userSelection[ind - 1]]
       }
     })
     return sum.toFixed(2);
@@ -308,7 +306,7 @@ function App() {
           <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
         </div>
         <div className='arrow-up'></div>
-        <button className='guiBut' 
+        <button className='guiBut'
           onClick={async () => {
             setFocusedMethod(1);
             const dist = await heldKarp();
@@ -448,7 +446,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
