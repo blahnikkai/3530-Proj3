@@ -25,7 +25,7 @@ function App() {
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
-  const colors = [Color.WHITE, Color.GREENYELLOW];
+  const colors = [Color.ORANGERED, Color.GREENYELLOW];
 
 
 
@@ -103,7 +103,7 @@ function App() {
     function update() {
       if(i >= curCities.length - 1) {
         // go back to start
-        updateEdge(workingEdges, cur, 0, 1);
+        updateEdge(workingEdges, cur, 0, 0);
         totalDist += adjMat[cur][0];
         clearInterval(newIntervalId);
         return;
@@ -116,7 +116,7 @@ function App() {
           nearestDist = adjMat[cur][j];
         }
       }
-      updateEdge(workingEdges, cur, nearest, 1);
+      updateEdge(workingEdges, cur, nearest, 0);
       visited.add(nearest);
       cur = nearest;
       totalDist += adjMat[cur][nearest];
