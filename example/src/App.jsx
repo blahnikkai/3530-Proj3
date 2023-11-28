@@ -273,6 +273,17 @@ function App() {
       
   }
 
+  function calcUserDist() {
+    var sum = 0;
+    userSelection.map((val, ind) => {
+      if (ind != 0) {
+        sum += distance(curCities[val].lng, curCities[val].lat,
+          curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat);
+      }
+    })
+    return sum.toFixed(2);
+  }
+
 
   return (
     <div>
@@ -299,8 +310,8 @@ function App() {
         <div className='arrow-up'></div>
         <button className='guiBut' 
           onClick={async () => {
-            const dist = await heldKarp();
             setFocusedMethod(1);
+            const dist = await heldKarp();
             console.log(dist);
             setHeldKarpDist(dist); 
             console.log(edges);
@@ -309,8 +320,8 @@ function App() {
         </button>
         <button className='guiBut' 
         onClick={async () => {
-          const dist = await nearestNeighbor();
           setFocusedMethod(0);
+          const dist = await nearestNeighbor();
           console.log(dist);
           setNearestNeighborDist(dist);
           console.log(edges)
@@ -350,12 +361,15 @@ function App() {
         <div>Algorithm</div>
         <div>Distance (km)</div>
         <div>Time (sec)</div>
-        <div>Held-Karp</div>
+        <div style={{color: '#ADFF2F'}}>Held-Karp</div>
         <div>{heldKarpDist ? heldKarpDist.toFixed(2) : ''}</div>
         <div>Slower</div>
-        <div>Nearest Neighbor</div>
+        <div style={{color: '#FF4500'}}>Nearest Neighbor</div>
         <div>{nearestNeighborDist ? nearestNeighborDist.toFixed(2) : ''}</div>
-        <div>Faster</div>
+        <div>Faster</div>        
+        <div style={{color: '#87CEEB'}}>Your path</div>
+        <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
+        <div>Slowest</div>
       </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
