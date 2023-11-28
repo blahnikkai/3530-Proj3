@@ -84,6 +84,7 @@ function App() {
       updateEdge(workingEdges, cur, nxtNode, 1);
 
       if(nxtNode === 0) {
+        clearInterval(newIntervalId);
         return;
       }
       visited |= (1 << nxtNode);
@@ -354,7 +355,7 @@ function App() {
                           )
                         }
                         material={focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5)}
-                        onClick={() => setFocusedMethod(e)}
+                        onClick={() => {setFocusedMethod(e);console.log(e);}}
                       />
                     </Entity>
                   </div>
