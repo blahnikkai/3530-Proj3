@@ -327,25 +327,25 @@ function App() {
 
         <div className='arrow-down'></div>
         <div className='gray-box-of-doom-2'>
-        <div className='knobLabel'>Animation <br/> speed:</div>
-        <Donut
-          diameter={80}
-          min={0}
-          max={10}
-          step={1}
-          value={animationSpeed}
-          theme={{
-            donutColor: '#303336',
-            bgrColor: '#444',
-            maxedBgrColor: '#444',
-            centerColor: 'rgba(84, 84, 84, 1)',
-            centerFocusedColor: 'rgba(84, 84, 84, 1)',
-            donutThickness: 10,   
-          }}
-          onValueChange={setAnimationSpeed}
-        />
+          <div className='knobLabel'>Animation <br/> speed:</div>
+          <Donut
+            diameter={80}
+            min={0}
+            max={10}
+            step={1}
+            value={animationSpeed}
+            theme={{
+              donutColor: '#303336',
+              bgrColor: '#444',
+              maxedBgrColor: '#444',
+              centerColor: 'rgba(84, 84, 84, 1)',
+              centerFocusedColor: 'rgba(84, 84, 84, 1)',
+              donutThickness: 10,   
+            }}
+            onValueChange={setAnimationSpeed}
+          />
+        </div>
       </div>
-    </div>
       <div className='resultsGrid'>
         <div>Algorithm</div>
         <div>Distance (km)</div>
@@ -359,7 +359,6 @@ function App() {
       </div>
       <Viewer className='viewer'>
         {allCities && curCities && adjMat && edges ?
-
         <div>
           {curCities.map((c, ind) => 
             <div key={c.city}>
