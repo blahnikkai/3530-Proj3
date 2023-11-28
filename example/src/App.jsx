@@ -207,6 +207,7 @@ function App() {
 
   async function sampleCities() {
     clearEdges();
+    setUserSelection([]);
     clearInterval(intervalId);
     let sample = allCities.slice(index, index + num);
     console.log(sample);
