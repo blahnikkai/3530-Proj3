@@ -24,6 +24,7 @@ function App() {
   const [intervalId, setIntervalId] = useState();
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
+  const [cityHover, setCityHover] = useState(-1);
   const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
@@ -320,12 +321,14 @@ function App() {
               <Entity
                 name={c.city}
                 position={Cartesian3.fromDegrees(c.lng, c.lat)}
-                point={{ pixelSize: 20, color: Color.WHITE }}
+                point={{ pixelSize: 20, color: cityHover == ind ? Color.WHITE : Color.LIGHTGRAY}}
                 label={{ text: `${c.city}, ${c.iso3} (${ind})`, 
-                  font: '10px sans-serif', 
+                  font: cityHover == ind ? 'sans-serif bold 20px' : '10px sans-serif', 
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
                 onClick={() => addToSelection(ind)}
+                onMouseEnter={() => setCityHover(ind)}
+                onMouseLeave={() => setCityHover(-1)}
               />
             </div>
           )}
