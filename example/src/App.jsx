@@ -26,6 +26,7 @@ function App() {
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
   const colors = [Color.ORANGERED, Color.GREENYELLOW];
+  const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
 
 
 
@@ -243,6 +244,7 @@ function App() {
   }
 
   function addToSelection(i) {
+      setFocusedMethod(2);
       if (userSelection.length > num) {
         return;
       }
@@ -286,9 +288,9 @@ function App() {
           </div>
           <div className='arrow-up'></div>
 
-          <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
-          <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
-          <button className='guiBut' onClick={() => {setUserSelection([])}}>Reset user path</button>
+          <button className='guiBut' onClick={() => {heldKarp(); setFocusedMethod(1); console.log(edges)}}>Run Held-Karp algorithm</button>
+          <button className='guiBut' onClick={() => {nearestNeighbor(); setFocusedMethod(0); console.log(edges)}}>Nearest Neighbor</button>
+          <button className='guiBut' onClick={() => {setUserSelection([]); setFocusedMethod(2)}}>Reset user path</button>
 
           <div className='arrow-down'></div>
           <div className='gray-box-of-doom-2'>
@@ -351,7 +353,8 @@ function App() {
                             curCities[ind2].lng, curCities[ind2].lat]
                           )
                         }
-                        material={colors[e]}
+                        material={focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5)}
+                        onClick={() => setFocusedMethod(e)}
                       />
                     </Entity>
                   </div>
@@ -373,7 +376,8 @@ function App() {
                       curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat]
                     )
                   }
-                  material={userSelection.length > num ? Color.SKYBLUE : Color.LIGHTBLUE}
+                  material={userSelection.length > num ? Color.fromAlpha(Color.SKYBLUE, focusedMethod == 2 ? 1.0 : 0.5) : Color.fromAlpha(Color.LIGHTBLUE, focusedMethod == 2 ? 1.0 : 0.5)}
+                  onClick={() => setFocusedMethod(2)}
                 />
               </Entity>  
               : <></>
