@@ -27,7 +27,10 @@ function App() {
   const [nearestNeighborDist, setNearestNeighborDist] = useState(undefined);
   //const [nearestNeighborTime, setNearestNeighborTime] = useState(undefined);
   const [animationSpeed, setAnimationSpeed] = useState(3);
-  const colors = [Color.WHITE, Color.GREENYELLOW];
+  const [userSelection, setUserSelection] = useState([])
+  const [cityHover, setCityHover] = useState(-1);
+  const colors = [Color.ORANGERED, Color.GREENYELLOW];
+  const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
 
 
 
@@ -109,7 +112,7 @@ function App() {
         const newIntervalId = setInterval(() => {
           if(i >= curCities.length - 1) {
             // go back to start
-            updateEdge(workingEdges, cur, 0, 1);
+            updateEdge(workingEdges, cur, 0, 0);
             totalDist += adjMat[cur][0];
             clearInterval(newIntervalId);
             resolve();
@@ -123,7 +126,7 @@ function App() {
               nearestDist = adjMat[cur][j];
             }
           }
-          updateEdge(workingEdges, cur, nearest, 1);
+          updateEdge(workingEdges, cur, nearest, 0);
           visited.add(nearest);
           totalDist += adjMat[cur][nearest];
           cur = nearest;
@@ -216,6 +219,8 @@ function App() {
 
   async function sampleCities() {
     clearEdges();
+    setUserSelection([]);
+    setCityHover(-1);
     clearInterval(intervalId);
     setIntervalId(null);
     setHeldKarpDist(undefined);
@@ -251,76 +256,96 @@ function App() {
     return csv;
   }
 
+  function addToSelection(i) {
+      setFocusedMethod(2);
+      if (userSelection.length > num) {
+        return;
+      }
+
+      if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
+        setUserSelection(userSelection.concat([i]));
+      } else if (userSelection[userSelection.length - 1] == i) {
+        setUserSelection(userSelection.slice(0, -1));
+      }
+
+      console.log(userSelection)
+      console.log(userSelection[userSelection.length - 1])
+      
+  }
+
 
   return (
     <div>
-          <div className='gui'>
-              <div className='gray-box-of-doom'>
-                    <Donut
-                      diameter={80}
-                      min={0}
-                      max={20}
-                      step={1}
-                      value={num}
-                      theme={{
-                          donutColor: '#303336',
-                          bgrColor: '#444',
-                          maxedBgrColor: '#444',
-                          centerColor: 'rgba(84, 84, 84, 1)',
-                          centerFocusedColor: 'rgba(84, 84, 84, 1)',
-                          donutThickness: 10,   
-                      }}
-                      onValueChange={setNum}
-                  >
-                  </Donut>
-                  <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
-              </div>
-          <div className='arrow-up'></div>
-          <button className='guiBut' 
+      <div className='gui'>
+        <div className='gray-box-of-doom'>
+          <Donut
+            diameter={80}
+            min={0}
+            max={20}
+            step={1}
+            value={num}
+            theme={{
+              donutColor: '#303336',
+              bgrColor: '#444',
+              maxedBgrColor: '#444',
+              centerColor: 'rgba(84, 84, 84, 1)',
+              centerFocusedColor: 'rgba(84, 84, 84, 1)',
+              donutThickness: 10,   
+            }}
+            onValueChange={setNum}
+          />
+          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
+        </div>
+        <div className='arrow-up'></div>
+        <button className='guiBut' 
           onClick={async () => {
             const dist = await heldKarp();
+            setFocusedMethod(1);
             console.log(dist);
             setHeldKarpDist(dist); 
             console.log(edges);
-          }}
-          >
-          Run Held-Karp algorithm
+          }}>
+            Run Held-Karp algorithm
         </button>
-          <button className='guiBut' 
-          onClick={async () => {
-            const dist = await nearestNeighbor();
-            console.log(dist);
-            setNearestNeighborDist(dist);
-            console.log(edges)
+        <button className='guiBut' 
+        onClick={async () => {
+          const dist = await nearestNeighbor();
+          setFocusedMethod(0);
+          console.log(dist);
+          setNearestNeighborDist(dist);
+          console.log(edges)
+        }}>
+          Nearest Neighbor
+        </button>
+        <button className='guiBut' onClick={() => {
+          setUserSelection([]); 
+          setFocusedMethod(2)
+        }}>
+          Reset user path
+        </button>
+        <button className='guiBut' onClick={() => {}}>Temporary button</button>
+
+        <div className='arrow-down'></div>
+        <div className='gray-box-of-doom-2'>
+        <div className='knobLabel'>Animation <br/> speed:</div>
+        <Donut
+          diameter={80}
+          min={0}
+          max={10}
+          step={1}
+          value={animationSpeed}
+          theme={{
+            donutColor: '#303336',
+            bgrColor: '#444',
+            maxedBgrColor: '#444',
+            centerColor: 'rgba(84, 84, 84, 1)',
+            centerFocusedColor: 'rgba(84, 84, 84, 1)',
+            donutThickness: 10,   
           }}
-          >
-            Nearest Neighbor
-          </button>
-          <button className='guiBut' onClick={() => {}}>Temporary button</button>
-
-          <div className='arrow-down'></div>
-          <div className='gray-box-of-doom-2'>
-            <div className='knobLabel'>Animation speed:</div>
-            <Donut
-              diameter={80}
-              min={0}
-              max={10}
-              step={1}
-              value={animationSpeed}
-              theme={{
-                  donutColor: '#303336',
-                  bgrColor: '#444',
-                  maxedBgrColor: '#444',
-                  centerColor: 'rgba(84, 84, 84, 1)',
-                  centerFocusedColor: 'rgba(84, 84, 84, 1)',
-                  donutThickness: 10,   
-              }}
-              onValueChange={setAnimationSpeed}
-            >
-            </Donut>
-
-          </div>
-        </div>
+          onValueChange={setAnimationSpeed}
+        />
+      </div>
+    </div>
       <div className='resultsGrid'>
         <div>Algorithm</div>
         <div>Distance (km)</div>
@@ -341,12 +366,14 @@ function App() {
               <Entity
                 name={c.city}
                 position={Cartesian3.fromDegrees(c.lng, c.lat)}
-                point={{ pixelSize: 20, color: Color.WHITE }}
-                label={{ text: `${c.city}, ${c.iso3} (${ind})`, 
-                  font: '10px sans-serif', 
+                point={{ pixelSize: 20, color: cityHover == ind ? Color.SKYBLUE : Color.WHITE}}
+                label={{ text: `${c.city}, ${c.iso3}`, 
+                  font: cityHover == ind ? '16px Victor Mono, monospace' : '12px Victor Mono', 
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
-                // onClick={() => console.log("HI")}
+                onClick={() => addToSelection(ind)}
+                onMouseEnter={() => setCityHover(ind)}
+                onMouseLeave={() => setCityHover(-1)}
               />
             </div>
           )}
@@ -368,12 +395,35 @@ function App() {
                             curCities[ind2].lng, curCities[ind2].lat]
                           )
                         }
-                        material={colors[e]}
+                        material={focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5)}
+                        onClick={() => setFocusedMethod(e)}
                       />
                     </Entity>
                   </div>
                 : <></>}
               )}
+            </div>
+          )}
+
+          {userSelection.map((val, ind) => 
+            <div key={ind}>
+              {ind != 0 ? 
+                <Entity>
+                <PolylineGraphics
+                  show
+                  width={5}
+                  positions={ 
+                    Cartesian3.fromDegreesArray(
+                      [curCities[val].lng, curCities[val].lat,
+                      curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat]
+                    )
+                  }
+                  material={userSelection.length > num ? Color.fromAlpha(Color.SKYBLUE, focusedMethod == 2 ? 1.0 : 0.5) : Color.fromAlpha(Color.LIGHTBLUE, focusedMethod == 2 ? 1.0 : 0.5)}
+                  onClick={() => setFocusedMethod(2)}
+                />
+              </Entity>  
+              : <></>
+            }
             </div>
           )}
 
