@@ -18,7 +18,7 @@ html, body, #cesiumContainer {
   right: 0;
   bottom: 0;
   height: 110px;
-  width: 75%;
+  width: 55%;
   background-color: #303336;
   border: 2px solid #444;
   border-radius: 5px;
@@ -27,7 +27,7 @@ html, body, #cesiumContainer {
   align-items: center;
   justify-content:space-around;
   padding-left: 25vw;
-  padding-right: 0px;
+  padding-right: 20vw;
 }
 
 .resultsGrid {
@@ -81,9 +81,19 @@ html, body, #cesiumContainer {
   width: 0; 
   height: 0; 
   border-left: 0px solid transparent;
-  border-right: 110px solid transparent;
+  border-right: 55px solid transparent;
   border-bottom: 110px solid rgba(84, 84, 84, 1);
   left: 20vw;
+}
+
+.arrow-down {
+  position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: 55px solid transparent;
+  border-right: 0px solid transparent;
+  border-top: 110px solid rgba(84, 84, 84, 1);
+  right: 15vw;
 }
 
 .gray-box-of-doom {
@@ -95,4 +105,20 @@ html, body, #cesiumContainer {
   display: flex;
   align-items: center;
   justify-content:space-around
+}
+
+.gray-box-of-doom-2 {
+  position: absolute;
+  width: 15vw; 
+  height: 110px; 
+  background-color: rgba(84, 84, 84, 1);
+  right: 0px;
+  display: flex;
+  align-items: center;
+  justify-content:space-around
+}
+
+.knobLabel {
+  color: #c2c9d6;
+  width: 1px;
 }
