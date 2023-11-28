@@ -23,6 +23,7 @@ function App() {
   const [num, setNum] = useState(5);
   const [intervalId, setIntervalId] = useState();
   const [animationSpeed, setAnimationSpeed] = useState(3);
+  const [userSelection, setUserSelection] = useState([])
   const colors = [Color.WHITE, Color.GREENYELLOW];
 
 
@@ -238,6 +239,22 @@ function App() {
     return csv;
   }
 
+  function addToSelection(i) {
+      if (userSelection.length > num) {
+        return;
+      }
+
+      if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
+        setUserSelection(userSelection.concat([i]));
+      } else if (userSelection[userSelection.length - 1] == i) {
+        setUserSelection(userSelection.slice(0, -1));
+      }
+
+      console.log(userSelection)
+      console.log(userSelection[userSelection.length - 1])
+      
+  }
+
 
   return (
     <div>
@@ -268,10 +285,7 @@ function App() {
 
           <button className='guiBut' onClick={() => {heldKarp(); console.log(edges)}}>Run Held-Karp algorithm</button>
           <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
-          <button className='guiBut' onClick={() => {}}>Temporary button</button>
-
-          <button className='guiBut' onClick={() => {nearestNeighbor(); console.log(edges)}}>Nearest Neighbor</button>
-          <button className='guiBut' onClick={() => {}}>Temporary button</button>
+          <button className='guiBut' onClick={() => {setUserSelection([])}}>Reset user path</button>
 
           <div className='arrow-down'></div>
           <div className='gray-box-of-doom-2'>
@@ -310,7 +324,7 @@ function App() {
                   font: '10px sans-serif', 
                   pixelOffset: new Cartesian2(20, 20) 
                 }}
-                // onClick={() => console.log("HI")}
+                onClick={() => addToSelection(ind)}
               />
             </div>
           )}
@@ -338,6 +352,27 @@ function App() {
                   </div>
                 : <></>}
               )}
+            </div>
+          )}
+
+          {userSelection.map((val, ind) => 
+            <div key={ind}>
+              {ind != 0 ? 
+                <Entity>
+                <PolylineGraphics
+                  show
+                  width={5}
+                  positions={ 
+                    Cartesian3.fromDegreesArray(
+                      [curCities[val].lng, curCities[val].lat,
+                      curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat]
+                    )
+                  }
+                  material={userSelection.length > num ? Color.SKYBLUE : Color.LIGHTBLUE}
+                />
+              </Entity>  
+              : <></>
+            }
             </div>
           )}
 
