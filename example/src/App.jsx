@@ -53,7 +53,7 @@ function App() {
     return (mask & (1 << ind)) !== 0;
   }
   
-  async function heldKarp() {
+  async function heldKarp() { 
     clearInterval(intervalId);
     let workingEdges = clearEdges();
     const n = adjMat.length;
@@ -138,10 +138,11 @@ function App() {
     return totalDist;
   }
 
-  function updateEdge(workingEdges, from, to, state) {
-    workingEdges[from][to] = state;
-    workingEdges[to][from] = state;
+  function updateEdge(workingEdges, from, to, state) { //0 - nn, 1 - hk
+    workingEdges[from][to][state] = state;
+    workingEdges[to][from][state] = state;
     setEdges([...workingEdges]);
+    console.log("LOOK HERE", [...workingEdges])
   }
 
 
@@ -210,7 +211,7 @@ function App() {
   }
 
   function clearEdges() {
-    let e = makeArray(curCities.length, curCities.length, -1);
+    let e = makeArray(curCities.length, curCities.length, [-1, -1]);
     console.log(e);
     setEdges(e);
     return e;
@@ -313,7 +314,9 @@ function App() {
             console.log(dist);
             setHeldKarpDist(dist); 
             console.log(edges);
-          }}>
+          }}
+          style={{color: '#ADFF2F'}}
+          >
             Run Held-Karp algorithm
         </button>
         <button className='guiBut' 
@@ -323,16 +326,19 @@ function App() {
           console.log(dist);
           setNearestNeighborDist(dist);
           console.log(edges)
-        }}>
+        }}
+        style={{color: '#FF4500'}}
+        >
           Nearest Neighbor
         </button>
         <button className='guiBut' onClick={() => {
           setUserSelection([]); 
           setFocusedMethod(2)
-        }}>
+        }}
+        style={{color: '#87CEEB'}}
+        >
           Reset user path
         </button>
-        <button className='guiBut' onClick={() => {}}>Temporary button</button>
 
         <div className='arrow-down'></div>
         <div className='gray-box-of-doom-2'>
@@ -353,6 +359,20 @@ function App() {
             }}
             onValueChange={setAnimationSpeed}
           />
+        </div>
+        <div className='pathDisplay'>
+          {userSelection.map((val, ind) => {
+            return ind == num ? 
+            <div>
+              <div className='mini-arrow-up'></div>
+              <div className='pathDisplayTop'>Complete user path:</div>
+            </div>
+            :
+            <div key={ind} className='pathCity'>
+              {curCities[userSelection[ind]].city}
+            </div>
+          }
+          )}
         </div>
       </div>
       <div className='resultsGrid'>
@@ -389,13 +409,16 @@ function App() {
             </div>
           )}
 
-          {edges.map((edge, ind1) => 
+          {edges.map((edgeRow, ind1) => 
             <div key={ind1}>
-              {edge && edge.map && edge.map((e, ind2) => 
-                {return ind1 > ind2 && e != -1 ? 
+              {edgeRow.map((edge, ind2) => 
+              {return ind1 > ind2 ? 
+              <div key={[ind1, ind2]}>
+                {edge && edge.map && edge.map((e, ind3) => {
                     // console.log(edge)
                     // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
-                  <div key={ind1 * num + ind2}>
+                    {return e != -1 ?                   
+                    <div key={[ind1, ind2, ind3]}>
                     <Entity>
                       <PolylineGraphics
                         show
@@ -411,7 +434,17 @@ function App() {
                       />
                     </Entity>
                   </div>
-                : <></>}
+                  : <></>
+                }
+                })
+                
+                }
+              </div>
+              : <></>}
+
+
+
+
               )}
             </div>
           )}

@@ -4,7 +4,7 @@ html, body, #cesiumContainer {
   width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
   font-family: 'Victor Mono', monospace;
   font-weight: 300;
-  color: #66f66f;
+  color: #c2c9d6;
 }
 
 #root {
@@ -20,7 +20,7 @@ html, body, #cesiumContainer {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 110px;
+  height: 6vw;
   width: 55%;
   background-color: #303336;
   border: 2px solid #444;
@@ -84,8 +84,8 @@ html, body, #cesiumContainer {
   width: 0; 
   height: 0; 
   border-left: 0px solid transparent;
-  border-right: 55px solid transparent;
-  border-bottom: 110px solid rgba(84, 84, 84, 1);
+  border-right: 3vw solid transparent;
+  border-bottom: 6vw solid rgba(84, 84, 84, 1);
   left: 20vw;
 }
 
@@ -93,16 +93,16 @@ html, body, #cesiumContainer {
   position: absolute;
   width: 0; 
   height: 0; 
-  border-left: 55px solid transparent;
+  border-left: 3vw solid transparent;
   border-right: 0px solid transparent;
-  border-top: 110px solid rgba(84, 84, 84, 1);
+  border-top: 6vw solid rgba(84, 84, 84, 1);
   right: 15vw;
 }
 
 .gray-box-of-doom {
   position: absolute;
   width: 20vw; 
-  height: 110px; 
+  height: 6vw; 
   background-color: rgba(84, 84, 84, 1);
   left: 0px;
   display: flex;
@@ -113,7 +113,7 @@ html, body, #cesiumContainer {
 .gray-box-of-doom-2 {
   position: absolute;
   width: 15vw; 
-  height: 110px; 
+  height: 6vw; 
   background-color: rgba(84, 84, 84, 1);
   right: 0px;
   display: flex;
@@ -125,4 +125,39 @@ html, body, #cesiumContainer {
   color: #c2c9d6;
   /* width: 1px; */
   text-align: right;
+}
+
+.pathDisplay {
+  width: 18vw ;
+  background-color: rgba(84, 84, 84, 1);
+  position:absolute;
+  bottom: 6vw;
+  right: 0;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.pathCity {
+  height: 1.5vw;
+}
+
+.pathDisplayTop {
+  position: absolute;
+  right: 0;
+  width: 12vw;
+  top: -1.5vw;
+  background-color: rgba(84, 84, 84, 1);
+  height: 1.5vw;
+  padding-right: 3vw;
+}
+
+.mini-arrow-up {
+  position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: 3vw solid transparent;
+  border-right: 0px solid transparent;
+  border-bottom: 1.5vw solid rgba(84, 84, 84, 1);
+  top: -1.5vw;
+  right: 15vw;
 }
