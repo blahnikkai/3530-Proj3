@@ -420,20 +420,22 @@ function App() {
                     // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
                     {return e != -1 ?                   
                     <div key={[ind1, ind2, ind3]}>
-                    <Entity>
-                      <PolylineGraphics
-                        show
-                        width={5}
-                        positions={ 
+                    <Entity
+                      polyline={{
+                        show:true,
+                        width: 5,
+                        positions: 
                           Cartesian3.fromDegreesArray(
                             [curCities[ind1].lng, curCities[ind1].lat,
                             curCities[ind2].lng, curCities[ind2].lat]
-                          )
-                        }
-                        material={focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5)}
-                        onClick={() => {setFocusedMethod(e);console.log(e);}}
-                      />
-                    </Entity>
+                          ),
+                        material: focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5),
+                        onClick: () => {setFocusedMethod(e);console.log(e);}
+                      }}
+                    />
+                      
+
+                      
                   </div>
                   : <></>
                 }
@@ -453,20 +455,19 @@ function App() {
           {userSelection.map((val, ind) => 
             <div key={ind}>
               {ind != 0 ? 
-                <Entity>
-                <PolylineGraphics
-                  show
-                  width={5}
-                  positions={ 
-                    Cartesian3.fromDegreesArray(
-                      [curCities[val].lng, curCities[val].lat,
-                      curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat]
-                    )
-                  }
-                  material={userSelection.length > num ? Color.fromAlpha(Color.SKYBLUE, focusedMethod == 2 ? 1.0 : 0.5) : Color.fromAlpha(Color.LIGHTBLUE, focusedMethod == 2 ? 1.0 : 0.5)}
-                  onClick={() => setFocusedMethod(2)}
+                <Entity
+                  polyline={{
+                    show: true,
+                    width: 5,
+                    positions: 
+                      Cartesian3.fromDegreesArray(
+                        [curCities[val].lng, curCities[val].lat,
+                        curCities[userSelection[ind - 1]].lng, curCities[userSelection[ind - 1]].lat]
+                      ),
+                    material: userSelection.length > num ? Color.fromAlpha(Color.SKYBLUE, focusedMethod == 2 ? 1.0 : 0.5) : Color.fromAlpha(Color.LIGHTBLUE, focusedMethod == 2 ? 1.0 : 0.5),
+                    onClick: () => setFocusedMethod(2)
+                  }}
                 />
-              </Entity>  
               : <></>
             }
             </div>
