@@ -21,7 +21,7 @@ function App() {
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(5);
-  const [intervalId, setIntervalId] = useState(undefined);
+  const [timeoutId, setTimeoutId] = useState(undefined);
   const [heldKarpDist, setHeldKarpDist] = useState(undefined);
   // const [heldKarpTime, setHeldKarpTime] = useState(undefined);
   const [nearestNeighborDist, setNearestNeighborDist] = useState(undefined);
@@ -59,8 +59,8 @@ function App() {
   }
   
   async function heldKarp() { 
-    clearInterval(intervalId);
-    let workingEdges = clearEdges(1);
+    let workingEdges = makeArray(curCities.length, curCities.length, -1);
+    let states = [structuredClone(workingEdges)];
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -86,70 +86,69 @@ function App() {
     }
     let visited = 1;
     let cur = 0;
-    function update() {
-      console.log('updated');
+    while(true) {
       let nxtNode = nxt[visited][cur];
   
-      updateEdge(workingEdges, cur, nxtNode, 1);
+      workingEdges[cur][nxtNode] = 1;
+      workingEdges[nxtNode][cur] = 1;
+      states.push(structuredClone(workingEdges));
 
       if(nxtNode === 0) {
-        clearInterval(newIntervalId);
-        return;
+        break;
       }
       visited |= (1 << nxtNode);
       cur = nxtNode;    
     }
-    const newIntervalId = setInterval(() => update(), 1500/animationSpeed);
-    setIntervalId(newIntervalId);
-    return dp[1][0];
+    return [dp[1][0], states];
   }
 
   async function nearestNeighbor() {
-    clearInterval(intervalId);
-    let workingEdges = clearEdges(0);
+    let workingEdges = makeArray(curCities.length, curCities.length, -1);
     let cur = 0;
     let visited = new Set([0]);
     let totalDist = 0;
+    let states = [structuredClone(workingEdges)];
+    for(let i = 0; i < curCities.length - 1; ++i) {
+      let nearest = -1;
+      let nearestDist = INF;
+      for(let j = 0; j < curCities.length; ++j) {
+        if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
+          nearest = j;
+          nearestDist = adjMat[cur][j];
+        }
+      }
+      visited.add(nearest);
+      totalDist += adjMat[cur][nearest];
+
+      workingEdges[cur][nearest] = 0;
+      workingEdges[nearest][cur] = 0;
+      states.push(structuredClone(workingEdges));
+      
+      cur = nearest;
+    }
+    // go back to start
+    totalDist += adjMat[cur][0];
+    workingEdges[cur][0] = 0;
+    workingEdges[0][cur] = 0;
+    states.push(structuredClone(workingEdges));
+    return [totalDist, states];
+  }
+
+  function animateStates(states, algoIndex) {
+    clearTimeout(timeoutId);
     let i = 0;
-    async function make_path() {
-      return new Promise((resolve) => {
-        const newIntervalId = setInterval(() => {
-          if(i >= curCities.length - 1) {
-            // go back to start
-            updateEdge(workingEdges, cur, 0, 0);
-            totalDist += adjMat[cur][0];
-            clearInterval(newIntervalId);
-            resolve();
-            return;
-          }
-          let nearest = -1;
-          let nearestDist = INF;
-          for(let j = 0; j < curCities.length; ++j) {
-            if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
-              nearest = j;
-              nearestDist = adjMat[cur][j];
-            }
-          }
-          updateEdge(workingEdges, cur, nearest, 0);
-          visited.add(nearest);
-          totalDist += adjMat[cur][nearest];
-          cur = nearest;
-          ++i;
-        }, 1500/animationSpeed);
-      setIntervalId(newIntervalId);
-    })}
-    await make_path();
-    return totalDist;
+    let workingEdges = edges;
+    function update() {
+      if(i == states.length) {
+        return;
+      }
+      workingEdges[algoIndex] = states[i];
+      setEdges([...workingEdges]);
+      ++i;
+      setTimeoutId(setTimeout(() => update(), 1500 / animationSpeed));
+    }
+    update();
   }
-
-  function updateEdge(workingEdges, from, to, state) { //0 - nn, 1 - hk
-    // console.log(`setting [${from}][${to}][${state}] to [${state}]`);
-    workingEdges[state][from][to] = state;
-    workingEdges[state][to][from] = state;
-    // console.log("LOOK HERE", copy3dArray(workingEdges))
-    setEdges([...workingEdges]);
-  }
-
 
 
 
@@ -194,7 +193,6 @@ function App() {
   function distance(lat1, lon1, lat2, lon2) {
     const r = 6371; // km
     const p = Math.PI / 180;
-  
     const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
                   + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
                     (1 - Math.cos((lon2 - lon1) * p)) / 2;
@@ -229,8 +227,8 @@ function App() {
   async function sampleCities() {
     setUserSelection([]);
     setCityHover(-1);
-    clearInterval(intervalId);
-    setIntervalId(null);
+    clearTimeout(timeoutId);
+    setTimeoutId(null);
     setHeldKarpDist(undefined);
     setNearestNeighborDist(undefined);
     let sample = allCities.slice(index, index + num);
@@ -313,8 +311,9 @@ function App() {
         <button className='guiBut'
           onClick={async () => {
             setFocusedMethod(1);
-            const dist = await heldKarp();
-            setHeldKarpDist(dist); 
+            const [dist, states] = await heldKarp();
+            animateStates(states, 1);
+            setHeldKarpDist(dist.toFixed(2)); 
             console.log(edges);
           }}
           style={{color: '#ADFF2F'}}
@@ -324,8 +323,9 @@ function App() {
         <button className='guiBut' 
         onClick={async () => {
           setFocusedMethod(0);
-          const dist = await nearestNeighbor();
-          setNearestNeighborDist(dist);
+          const [dist, states] = await nearestNeighbor();
+          animateStates(states, 0);
+          setNearestNeighborDist(dist.toFixed(2));
           console.log(edges)
         }}
         style={{color: '#FF4500'}}
@@ -382,10 +382,10 @@ function App() {
         <div>Distance (km)</div>
         <div>Time (sec)</div>
         <div style={{color: '#ADFF2F'}}>Held-Karp</div>
-        <div>{heldKarpDist ? heldKarpDist.toFixed(2) : ''}</div>
+        <div>{heldKarpDist}</div>
         <div>Slower</div>
         <div style={{color: '#FF4500'}}>Nearest Neighbor</div>
-        <div>{nearestNeighborDist ? nearestNeighborDist.toFixed(2) : ''}</div>
+        <div>{nearestNeighborDist}</div>
         <div>Faster</div>        
         <div style={{color: '#87CEEB'}}>Your path</div>
         <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
@@ -415,8 +415,8 @@ function App() {
             <div key={ind1}>
               {algoEdges.map((row, ind2) =>
                 <div key={[ind1, ind2]}>
-                  {row && row.map && row.map((e, ind3) => {
-                    {return e != -1 ?                 
+                  {row && row.map && row.map((e, ind3) =>
+                    e != -1 ?                 
                       <div key={[ind1, ind2, ind3]}>
                         <Entity
                           polyline={{
@@ -431,9 +431,9 @@ function App() {
                             onClick: () => {setFocusedMethod(e); console.log(e);}
                           }}
                         />
-                      </div> : <></>
-                    }
-                  })}
+                      </div> 
+                    : <></>
+                  )}
                   </div>
                 )}
             </div>
