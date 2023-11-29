@@ -119,6 +119,8 @@ function App() {
   }
 
   async function sampleCities() {
+    setEdges([]); 
+    setAdjMat([]);
     setUserSelection([]);
     setCityHover(-1);
     clearTimeout(timeoutId);
@@ -286,7 +288,7 @@ function App() {
         <div>Slowest</div>
       </div>
       <Viewer className='viewer'>
-        {allCities && curCities && adjMat && edges ?
+        {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
         <div>
           {curCities.map((c, ind) => 
             <div key={c.city}>
