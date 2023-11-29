@@ -1,19 +1,19 @@
-import { Cartesian2, Cartesian3, Color } from 'cesium'
-import { Viewer, Entity, PolylineGraphics} from 'resium';
-import { useState, useEffect } from "react";
+import { Cartesian2, Cartesian3, Color } from 'cesium';
+import { Viewer, Entity } from 'resium';
+import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
-import { Donut } from 'react-dial-knob'
-import "./App.css"
+import { Donut } from 'react-dial-knob';
 
+import { heldKarp } from './HeldKarp';
+import { makeArray } from './MakeArray';
+import { nearestNeighbor } from './NearestNeighbor';
+import './App.css';
 
-const INF = 1e12;
-
-
-//REACT CODE
+// REACT CODE
 
 function App() {
 
-  //state vars
+  // state vars
 
   const [allCities, setAllCities] = useState([]);
   const [curCities, setCurCities] = useState([]);
@@ -32,108 +32,6 @@ function App() {
   const colors = [Color.ORANGERED, Color.GREENYELLOW];
   const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
 
-
-
-
-  // HELD-KARP ALGO
-
-  function makeArray(rows, cols, value) {
-    let arr = [];
-    for(let i = 0; i < rows; ++i) {
-      let row = [];
-      for(let j = 0; j < cols; ++j) {
-        if(value instanceof Array) {
-          row.push(value.slice());
-        }
-        else {
-          row.push(value)
-        }
-      }
-      arr.push(row);
-    }
-    return arr;
-  }
-  
-  function inMask(mask, ind) {
-    return (mask & (1 << ind)) !== 0;
-  }
-  
-  async function heldKarp() { 
-    let workingEdges = makeArray(curCities.length, curCities.length, -1);
-    let states = [structuredClone(workingEdges)];
-    const n = adjMat.length;
-    let dp = makeArray(1 << n, n, INF);
-    let nxt = makeArray(1 << n, n, -1);
-    for(let i = (1 << n) - 1; i >= 0; --i) {
-      for(let j = 0; j < n; ++j) {
-        if(i == (1 << n) - 1) {
-          dp[i][j] = adjMat[j][0];
-          nxt[i][j] = 0;
-          continue;
-        }
-        if(!inMask(i, j))
-          continue;
-        for(let k = 0; k < n; ++k) {
-          if(inMask(i, k))
-            continue;
-          const alt = adjMat[j][k] + dp[i | (1 << k)][k];
-          if(alt < dp[i][j]) {
-            dp[i][j] = alt;
-            nxt[i][j] = k;
-          }
-        }
-      }
-    }
-    let visited = 1;
-    let cur = 0;
-    while(true) {
-      let nxtNode = nxt[visited][cur];
-  
-      workingEdges[cur][nxtNode] = 1;
-      workingEdges[nxtNode][cur] = 1;
-      states.push(structuredClone(workingEdges));
-
-      if(nxtNode === 0) {
-        break;
-      }
-      visited |= (1 << nxtNode);
-      cur = nxtNode;    
-    }
-    return [dp[1][0], states];
-  }
-
-  async function nearestNeighbor() {
-    let workingEdges = makeArray(curCities.length, curCities.length, -1);
-    let cur = 0;
-    let visited = new Set([0]);
-    let totalDist = 0;
-    let states = [structuredClone(workingEdges)];
-    for(let i = 0; i < curCities.length - 1; ++i) {
-      let nearest = -1;
-      let nearestDist = INF;
-      for(let j = 0; j < curCities.length; ++j) {
-        if(!visited.has(j) && adjMat[cur][j] < nearestDist) {
-          nearest = j;
-          nearestDist = adjMat[cur][j];
-        }
-      }
-      visited.add(nearest);
-      totalDist += adjMat[cur][nearest];
-
-      workingEdges[cur][nearest] = 0;
-      workingEdges[nearest][cur] = 0;
-      states.push(structuredClone(workingEdges));
-      
-      cur = nearest;
-    }
-    // go back to start
-    totalDist += adjMat[cur][0];
-    workingEdges[cur][0] = 0;
-    workingEdges[0][cur] = 0;
-    states.push(structuredClone(workingEdges));
-    return [totalDist, states];
-  }
-
   function animateStates(states, algoIndex) {
     clearTimeout(timeoutId);
     let i = 0;
@@ -149,6 +47,7 @@ function App() {
     }
     update();
   }
+
 
 
 
@@ -301,7 +200,7 @@ function App() {
               maxedBgrColor: '#444',
               centerColor: 'rgba(84, 84, 84, 1)',
               centerFocusedColor: 'rgba(84, 84, 84, 1)',
-              donutThickness: 10,   
+              donutThickness: 10,
             }}
             onValueChange={setNum}
           />
@@ -311,7 +210,7 @@ function App() {
         <button className='guiBut'
           onClick={async () => {
             setFocusedMethod(1);
-            const [dist, states] = await heldKarp();
+            const [dist, states] = heldKarp(adjMat);
             animateStates(states, 1);
             setHeldKarpDist(dist.toFixed(2)); 
             console.log(edges);
@@ -323,7 +222,7 @@ function App() {
         <button className='guiBut' 
         onClick={async () => {
           setFocusedMethod(0);
-          const [dist, states] = await nearestNeighbor();
+          const [dist, states] = nearestNeighbor(adjMat);
           animateStates(states, 0);
           setNearestNeighborDist(dist.toFixed(2));
           console.log(edges)
