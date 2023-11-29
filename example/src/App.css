@@ -47,8 +47,12 @@ html, body, #cesiumContainer {
   background-color: rgba(84, 84, 84, 1);
   color: #c2c9d6;
 
+  border: 2px solid #444;
   border-radius: 0 0 20px 0;
   padding: 2px 0 2px;
+
+  width: 34vw;
+  /* height: 8vw; */
 }
 
 .resultsGrid > div {
@@ -135,6 +139,7 @@ html, body, #cesiumContainer {
   right: 0;
   display: flex;
   flex-direction: column-reverse;
+  border-left: 2px solid #444;
 }
 
 .pathCity {
@@ -149,15 +154,27 @@ html, body, #cesiumContainer {
   background-color: rgba(84, 84, 84, 1);
   height: 1.5vw;
   padding-right: 3vw;
+  border-top: 2px solid #444;
 }
 
 .mini-arrow-up {
   position: absolute;
   width: 0; 
   height: 0; 
-  border-left: 3vw solid transparent;
+  border-left: calc(3vw + 2px) solid transparent;
   border-right: 0px solid transparent;
-  border-bottom: 1.5vw solid rgba(84, 84, 84, 1);
-  top: -1.5vw;
+  border-bottom: calc(1.5vw - 0px) solid #444;
+  top: calc(-1.5vw) ;
+  right: 15vw;
+}
+
+.minier-arrow-up {
+  position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: calc(3vw - 0px) solid transparent;
+  border-right: 0px solid transparent;
+  border-bottom: calc(1.5vw - 2px) solid rgba(84, 84, 84, 1);
+  top: calc(-1.5vw + 2px);
   right: 15vw;
 }

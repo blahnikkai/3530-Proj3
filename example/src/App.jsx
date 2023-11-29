@@ -365,6 +365,7 @@ function App() {
             return ind == num ? 
             <div>
               <div className='mini-arrow-up'></div>
+              <div className='minier-arrow-up'></div>
               <div className='pathDisplayTop'>Complete user path:</div>
             </div>
             :
