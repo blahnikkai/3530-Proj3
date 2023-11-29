@@ -111,16 +111,11 @@ function App() {
     setAdjMat(mat);
   }
 
-  function clearEdges(index) {
-    let newEdges = edges;
-    if(index === undefined)
-      newEdges = [[], []];
-    if(index === undefined || index === 0)
-      newEdges[0] = makeArray(curCities.length, curCities.length, -1);
-    if(index === undefined || index === 1)
-      newEdges[1] = makeArray(curCities.length, curCities.length, -1);
+  function clearEdges() {
+    let newEdges = [];
+    newEdges.push(makeArray(curCities.length, curCities.length, -1));
+    newEdges.push(makeArray(curCities.length, curCities.length, -1));
     setEdges(newEdges);
-    return newEdges;
   }
 
   async function sampleCities() {
@@ -208,7 +203,7 @@ function App() {
         </div>
         <div className='arrow-up'></div>
         <button className='guiBut'
-          onClick={async () => {
+          onClick={() => {
             setFocusedMethod(1);
             const [dist, states] = heldKarp(adjMat);
             animateStates(states, 1);
@@ -220,7 +215,7 @@ function App() {
             Run Held-Karp algorithm
         </button>
         <button className='guiBut' 
-        onClick={async () => {
+        onClick={() => {
           setFocusedMethod(0);
           const [dist, states] = nearestNeighbor(adjMat);
           animateStates(states, 0);
