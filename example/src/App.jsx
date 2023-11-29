@@ -1,5 +1,5 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium'
-import { Viewer, Entity, PolylineGraphics} from "resium";
+import { Viewer, Entity, PolylineGraphics} from 'resium';
 import { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob'
@@ -35,14 +35,19 @@ function App() {
 
 
 
-  //HELD-KARP ALGO
+  // HELD-KARP ALGO
 
   function makeArray(rows, cols, value) {
     let arr = [];
     for(let i = 0; i < rows; ++i) {
       let row = [];
       for(let j = 0; j < cols; ++j) {
-        row.push(value)
+        if(value instanceof Array) {
+          row.push(value.slice());
+        }
+        else {
+          row.push(value)
+        }
       }
       arr.push(row);
     }
@@ -55,7 +60,7 @@ function App() {
   
   async function heldKarp() { 
     clearInterval(intervalId);
-    let workingEdges = clearEdges();
+    let workingEdges = clearEdges(1);
     const n = adjMat.length;
     let dp = makeArray(1 << n, n, INF);
     let nxt = makeArray(1 << n, n, -1);
@@ -96,13 +101,12 @@ function App() {
     }
     const newIntervalId = setInterval(() => update(), 1500/animationSpeed);
     setIntervalId(newIntervalId);
-    console.log(dp[1][0])
     return dp[1][0];
   }
 
   async function nearestNeighbor() {
     clearInterval(intervalId);
-    let workingEdges = clearEdges();
+    let workingEdges = clearEdges(0);
     let cur = 0;
     let visited = new Set([0]);
     let totalDist = 0;
@@ -139,10 +143,11 @@ function App() {
   }
 
   function updateEdge(workingEdges, from, to, state) { //0 - nn, 1 - hk
-    workingEdges[from][to][state] = state;
-    workingEdges[to][from][state] = state;
+    // console.log(`setting [${from}][${to}][${state}] to [${state}]`);
+    workingEdges[state][from][to] = state;
+    workingEdges[state][to][from] = state;
+    // console.log("LOOK HERE", copy3dArray(workingEdges))
     setEdges([...workingEdges]);
-    console.log("LOOK HERE", [...workingEdges])
   }
 
 
@@ -170,8 +175,8 @@ function App() {
     if(curCities.length === 0) {
       return;
     }
-    buildAdjMat();
     clearEdges();
+    buildAdjMat();
   }, [curCities])
 
   // build edges on load
@@ -199,26 +204,29 @@ function App() {
   function buildAdjMat() {
     let mat = makeArray(curCities.length, curCities.length, 0);
     for(let i = 0; i < curCities.length; ++i) {
-        for(let j = i; j < curCities.length; ++j) {
-            const dist = distance(curCities[i].lat, curCities[i].lng, 
-              curCities[j].lat, curCities[j].lng);
-            mat[i][j] = dist;
-            mat[j][i] = dist;
-        }
+      for(let j = i; j < curCities.length; ++j) {
+        const dist = distance(curCities[i].lat, curCities[i].lng, 
+          curCities[j].lat, curCities[j].lng);
+        mat[i][j] = dist;
+        mat[j][i] = dist;
+      }
     }
-    console.log(mat);
     setAdjMat(mat);
   }
 
-  function clearEdges() {
-    let e = makeArray(curCities.length, curCities.length, [-1, -1]);
-    console.log(e);
-    setEdges(e);
-    return e;
+  function clearEdges(index) {
+    let newEdges = edges;
+    if(index === undefined)
+      newEdges = [[], []];
+    if(index === undefined || index === 0)
+      newEdges[0] = makeArray(curCities.length, curCities.length, -1);
+    if(index === undefined || index === 1)
+      newEdges[1] = makeArray(curCities.length, curCities.length, -1);
+    setEdges(newEdges);
+    return newEdges;
   }
 
   async function sampleCities() {
-    clearEdges();
     setUserSelection([]);
     setCityHover(-1);
     clearInterval(intervalId);
@@ -226,7 +234,6 @@ function App() {
     setHeldKarpDist(undefined);
     setNearestNeighborDist(undefined);
     let sample = allCities.slice(index, index + num);
-    console.log(sample);
     setCurCities(sample); //cap num at 300?
     setIndex((index + num) % 41000);
     // why is array length only ~9000 instead of 44000
@@ -263,14 +270,10 @@ function App() {
       }
 
       if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
-        setUserSelection(userSelection.concat([i]));
+        setUserSelection(userSelection.push(i));
       } else if (userSelection[userSelection.length - 1] == i) {
         setUserSelection(userSelection.slice(0, -1));
       }
-
-      console.log(userSelection)
-      console.log(userSelection[userSelection.length - 1])
-      
   }
 
   function calcUserDist() {
@@ -311,7 +314,6 @@ function App() {
           onClick={async () => {
             setFocusedMethod(1);
             const dist = await heldKarp();
-            console.log(dist);
             setHeldKarpDist(dist); 
             console.log(edges);
           }}
@@ -323,7 +325,6 @@ function App() {
         onClick={async () => {
           setFocusedMethod(0);
           const dist = await nearestNeighbor();
-          console.log(dist);
           setNearestNeighborDist(dist);
           console.log(edges)
         }}
@@ -410,45 +411,31 @@ function App() {
             </div>
           )}
 
-          {edges.map((edgeRow, ind1) => 
+          {edges.map((algoEdges, ind1) => 
             <div key={ind1}>
-              {edgeRow.map((edge, ind2) => 
-              {return ind1 > ind2 ? 
-              <div key={[ind1, ind2]}>
-                {edge && edge.map && edge.map((e, ind3) => {
-                    // console.log(edge)
-                    // console.log(ind1, ind2, e, subset[ind1].lng, subset[ind2].lng);
-                    {return e != -1 ?                   
-                    <div key={[ind1, ind2, ind3]}>
-                    <Entity
-                      polyline={{
-                        show:true,
-                        width: 5,
-                        positions: 
-                          Cartesian3.fromDegreesArray(
-                            [curCities[ind1].lng, curCities[ind1].lat,
-                            curCities[ind2].lng, curCities[ind2].lat]
-                          ),
-                        material: focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5),
-                        onClick: () => {setFocusedMethod(e);console.log(e);}
-                      }}
-                    />
-                      
-
-                      
+              {algoEdges.map((row, ind2) =>
+                <div key={[ind1, ind2]}>
+                  {row && row.map && row.map((e, ind3) => {
+                    {return e != -1 ?                 
+                      <div key={[ind1, ind2, ind3]}>
+                        <Entity
+                          polyline={{
+                            show: true,
+                            width: 5,
+                            positions: 
+                              Cartesian3.fromDegreesArray(
+                                [curCities[ind2].lng, curCities[ind2].lat,
+                                curCities[ind3].lng, curCities[ind3].lat]
+                              ),
+                            material: focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5),
+                            onClick: () => {setFocusedMethod(e); console.log(e);}
+                          }}
+                        />
+                      </div> : <></>
+                    }
+                  })}
                   </div>
-                  : <></>
-                }
-                })
-                
-                }
-              </div>
-              : <></>}
-
-
-
-
-              )}
+                )}
             </div>
           )}
 
