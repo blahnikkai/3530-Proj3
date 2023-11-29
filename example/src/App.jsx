@@ -162,7 +162,7 @@ function App() {
       }
 
       if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
-        setUserSelection(userSelection.push(i));
+        setUserSelection(userSelection.concat([i]));
       } else if (userSelection[userSelection.length - 1] == i) {
         setUserSelection(userSelection.slice(0, -1));
       }

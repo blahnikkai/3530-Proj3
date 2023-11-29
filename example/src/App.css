@@ -163,7 +163,7 @@ html, body, #cesiumContainer {
   height: 0; 
   border-left: calc(3vw + 2px) solid transparent;
   border-right: 0px solid transparent;
-  border-bottom: calc(1.5vw - 0px) solid #444;
+  border-bottom: calc(1.5vw + 0px) solid #444;
   top: calc(-1.5vw) ;
   right: 15vw;
 }
