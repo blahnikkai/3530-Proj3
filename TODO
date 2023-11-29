@@ -1,0 +1,3 @@
+* Remove edges being in both directions, and remove check for ind2 < ind3 in map
+* Break code into files (distance function is easy)
+* Break html into components (ResultsGrid, etc)
