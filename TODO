@@ -2,3 +2,4 @@
 * Break code into files (distance function is easy)
 * Break html into components (ResultsGrid, etc)
 * add focus / delete buttons for all algos
+* Alex's request: Add favicon and page name

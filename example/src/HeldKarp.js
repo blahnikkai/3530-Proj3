@@ -38,7 +38,6 @@ export function heldKarp(adjMat) {
     let nxtNode = nxt[visited][cur];
 
     workingEdges[cur][nxtNode] = 1;
-    workingEdges[nxtNode][cur] = 1;
     states.push(structuredClone(workingEdges));
 
     if(nxtNode === 0) {
