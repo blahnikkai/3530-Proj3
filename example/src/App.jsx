@@ -8,6 +8,7 @@ import { Donut } from 'react-dial-knob';
 import { heldKarp } from './HeldKarp';
 import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
+import ResultsGrid from './Components/ResultsGrid';
 import './App.css';
 
 // REACT CODE
@@ -319,20 +320,16 @@ function App() {
           )}
         </div>
       </div>
-      <div className='resultsGrid'>
-        <div>Algorithm</div>
-        <div>Distance (km)</div>
-        <div>Time (ms)</div>
-        <div style={{color: '#ADFF2F'}}>Held-Karp</div>
-        <div>{heldKarpDist}</div>
-        <div>{heldKarpTime}</div>
-        <div style={{color: '#FF4500'}}>Nearest Neighbor</div>
-        <div>{nearestNeighborDist}</div>
-        <div>{nearestNeighborTime}</div>        
-        <div style={{color: '#87CEEB'}}>Your path</div>
-        <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
-        <div>Slowest</div>
-      </div>
+      
+      <ResultsGrid
+        heldKarpDist={heldKarpDist}
+        heldKarpTime={heldKarpTime}
+        nearestNeighborDist={nearestNeighborDist}
+        nearestNeighborTime={nearestNeighborTime}
+        userDist={userSelection.length > 0 ? calcUserDist() : ''}
+        userPathComplete={userSelection.length > num}
+      />
+
       <Viewer className='viewer'>
         {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
         <div>
