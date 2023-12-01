@@ -111,11 +111,16 @@ function App() {
     setAdjMat(mat);
   }
 
-  function clearEdges() {
-    let newEdges = [];
-    newEdges.push(makeArray(curCities.length, curCities.length, -1));
-    newEdges.push(makeArray(curCities.length, curCities.length, -1));
+  function clearEdges(index) {
+    let newEdges = edges;
+    if(index === undefined)
+      newEdges = [[], []];
+    if(index === undefined || index === 0)
+      newEdges[0] = makeArray(curCities.length, curCities.length, -1);
+    if(index === undefined || index === 1)
+      newEdges[1] = makeArray(curCities.length, curCities.length, -1);
     setEdges(newEdges);
+    return newEdges;
   }
 
   async function sampleCities() {
@@ -204,38 +209,69 @@ function App() {
           <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
         </div>
         <div className='arrow-up'></div>
-        <button className='guiBut'
+
+        <div className='buttonBox'>
+          <button className='guiBut'
+            onClick={() => {
+              setFocusedMethod(1);
+              const [dist, states] = heldKarp(adjMat);
+              animateStates(states, 1);
+              setHeldKarpDist(dist.toFixed(2)); 
+              console.log(edges);
+            }}
+            style={{color: '#ADFF2F'}}
+            >
+              Run Held-Karp algorithm
+          </button>
+          <button className='focusBut' onClick={() => setFocusedMethod(1)}>
+            <img src="/../public/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => {
+            setHeldKarpDist(undefined)
+            clearEdges(1)
+          }}>
+            <img src="/../public/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
+
+        <div className='buttonBox'>
+          <button className='guiBut' 
           onClick={() => {
-            setFocusedMethod(1);
-            const [dist, states] = heldKarp(adjMat);
-            animateStates(states, 1);
-            setHeldKarpDist(dist.toFixed(2)); 
-            console.log(edges);
+            setFocusedMethod(0);
+            const [dist, states] = nearestNeighbor(adjMat);
+            animateStates(states, 0);
+            setNearestNeighborDist(dist.toFixed(2));
+            console.log(edges)
           }}
-          style={{color: '#ADFF2F'}}
+          style={{color: '#FF4500'}}
           >
-            Run Held-Karp algorithm
-        </button>
-        <button className='guiBut' 
-        onClick={() => {
-          setFocusedMethod(0);
-          const [dist, states] = nearestNeighbor(adjMat);
-          animateStates(states, 0);
-          setNearestNeighborDist(dist.toFixed(2));
-          console.log(edges)
-        }}
-        style={{color: '#FF4500'}}
-        >
-          Nearest Neighbor
-        </button>
-        <button className='guiBut' onClick={() => {
-          setUserSelection([]); 
-          setFocusedMethod(2)
-        }}
-        style={{color: '#87CEEB'}}
-        >
-          Reset user path
-        </button>
+            Run Nearest Neighbor
+          </button>
+          <button className='focusBut' onClick={() => setFocusedMethod(0)}>
+            <img src="/../public/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => {
+            setNearestNeighborDist(undefined)
+            clearEdges(0)
+          }}>
+            <img src="/../public/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
+
+        <div className='buttonBox'>
+          <div 
+          style={{color: '#87CEEB'}}
+          className='pathText'
+          >
+            User Path
+          </div>
+          <button className='focusBut' onClick={() => setFocusedMethod(2)}>
+            <img src="/../public/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => setUserSelection([])}>
+            <img src="/../public/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
 
         <div className='arrow-down'></div>
         <div className='gray-box-of-doom-2'>

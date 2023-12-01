@@ -68,14 +68,6 @@ html, body, #cesiumContainer {
   right: 0;
 }
 
-.guiBut {
-  /* width: 40px;
-  height: 40px; */
-  background-color: rgba(84, 84, 84, 1);
-  color: #c2c9d6;
-  font-style: bold;
-}
-
 .nestedBut {
   background-color: #303336;
   color: #c2c9d6;
@@ -177,4 +169,63 @@ html, body, #cesiumContainer {
   border-bottom: calc(1.5vw - 2px) solid rgba(84, 84, 84, 1);
   top: calc(-1.5vw + 2px);
   right: 15vw;
+}
+
+.buttonBox {
+  margin-right: -1vw;
+  display: flex;
+  flex-direction: row;
+}
+
+.guiBut {
+  /* width: 15vw; */
+  z-index: 5;
+}
+
+.guiBut, .focusBut, .removeBut {
+  background-color: rgba(84, 84, 84, 1);
+  color: #c2c9d6;
+  font-style: bold;
+  margin-right: -.75vw;
+  position: relative;
+  height: 3vw;
+}
+
+
+.focusBut {
+  z-index: 4;
+  background-color: #0000A8;
+  width: 3vw;
+  padding: 0;
+  padding-left: .8vw;
+  padding-top: .1vw;
+}
+
+.removeBut {
+  background-color: #A80000;
+  z-index: 3;
+  width: 3vw;
+  padding: 0;
+  padding-left: .5vw;
+}
+
+.image {
+  max-width:65%;
+  max-height:65%;
+  filter: invert(99%) sepia(97%) saturate(9%) hue-rotate(69deg) brightness(102%) contrast(100%);
+}
+
+.pathText {
+  background-color: #303336;
+  height: 3vw;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-right: -.75vw;
+  z-index: 9;
+  border-right: 4px solid #444;
+  border-bottom: 4px solid #444;
+  padding-right: .75vw;
+  padding-left: 1vw;
+  margin-left: 1vw;
 }
