@@ -1,7 +1,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Viewer, Entity } from 'resium';
 import { useState, useEffect } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob';
 
@@ -10,6 +10,7 @@ import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
 import ResultsGrid from './Components/ResultsGrid';
 import './App.css';
+import UserEdges from './Components/UserEdges';
 
 // REACT CODE
 
@@ -168,11 +169,11 @@ function App() {
 
   function addToSelection(i) {
       setFocusedMethod(2);
-      if (userSelection.length > num) {
+      if (userSelection.length > curCities.length) {
         return;
       }
 
-      if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
+      if (userSelection.find((x) => x == i) == undefined || (userSelection.length == curCities.length && i == userSelection[0])) {
         setUserSelection(userSelection.concat([i]));
       } else if (userSelection[userSelection.length - 1] == i) {
         setUserSelection(userSelection.slice(0, -1));
@@ -306,7 +307,7 @@ function App() {
         </div>
         <div className='pathDisplay'>
           {userSelection.map((val, ind) => {
-            return ind == num ? 
+            return ind == curCities.length ? 
             <div>
               <div className='mini-arrow-up'></div>
               <div className='minier-arrow-up'></div>
@@ -327,7 +328,7 @@ function App() {
         nearestNeighborDist={nearestNeighborDist}
         nearestNeighborTime={nearestNeighborTime}
         userDist={userSelection.length > 0 ? calcUserDist() : ''}
-        userPathComplete={userSelection.length > num}
+        userPathComplete={userSelection.length > curCities.length}
       />
 
       <Viewer className='viewer'>
@@ -377,8 +378,15 @@ function App() {
                 )}
             </div>
           )}
-
-          {userSelection.map((val, ind) => 
+          
+          <UserEdges
+            userSelection={userSelection}
+            curCities={curCities}
+            userSelectionComplete={userSelection.length > curCities.length}
+            focusedMethod={focusedMethod}
+            setFocusedMethod={setFocusedMethod}
+          />
+          {/* {userSelection.map((val, ind) => 
             <div key={ind}>
               {ind != 0 ? 
                 <Entity
@@ -397,7 +405,7 @@ function App() {
               : <></>
             }
             </div>
-          )}
+          )} */}
 
         </div>
         : <>Loading...</>}
