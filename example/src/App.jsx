@@ -1,6 +1,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Viewer, Entity } from 'resium';
 import { useState, useEffect } from 'react';
+import {Helmet} from "react-helmet";
 import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob';
 
@@ -111,14 +112,21 @@ function App() {
     setAdjMat(mat);
   }
 
-  function clearEdges() {
-    let newEdges = [];
-    newEdges.push(makeArray(curCities.length, curCities.length, -1));
-    newEdges.push(makeArray(curCities.length, curCities.length, -1));
+  function clearEdges(index) {
+    let newEdges = edges;
+    if(index === undefined)
+      newEdges = [[], []];
+    if(index === undefined || index === 0)
+      newEdges[0] = makeArray(curCities.length, curCities.length, -1);
+    if(index === undefined || index === 1)
+      newEdges[1] = makeArray(curCities.length, curCities.length, -1);
     setEdges(newEdges);
+    return newEdges;
   }
 
   async function sampleCities() {
+    setEdges([]); 
+    setAdjMat([]);
     setUserSelection([]);
     setCityHover(-1);
     clearTimeout(timeoutId);
@@ -162,7 +170,7 @@ function App() {
       }
 
       if (userSelection.find((x) => x == i) == undefined || (userSelection.length == num && i == userSelection[0])) {
-        setUserSelection(userSelection.push(i));
+        setUserSelection(userSelection.concat([i]));
       } else if (userSelection[userSelection.length - 1] == i) {
         setUserSelection(userSelection.slice(0, -1));
       }
@@ -181,6 +189,11 @@ function App() {
 
   return (
     <div>
+      <Helmet>
+        <title>Optimal Odyssey</title>
+        <link rel="icon" href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
+      </Helmet>
+
       <div className='gui'>
         <div className='gray-box-of-doom'>
           <Donut
@@ -202,38 +215,69 @@ function App() {
           <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
         </div>
         <div className='arrow-up'></div>
-        <button className='guiBut'
+
+        <div className='buttonBox'>
+          <button className='guiBut'
+            onClick={() => {
+              setFocusedMethod(1);
+              const [dist, states] = heldKarp(adjMat);
+              animateStates(states, 1);
+              setHeldKarpDist(dist.toFixed(2)); 
+              console.log(edges);
+            }}
+            style={{color: '#ADFF2F'}}
+            >
+              Run Held-Karp algorithm
+          </button>
+          <button className='focusBut' onClick={() => setFocusedMethod(1)}>
+            <img src="/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => {
+            setHeldKarpDist(undefined)
+            clearEdges(1)
+          }}>
+            <img src="/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
+
+        <div className='buttonBox'>
+          <button className='guiBut' 
           onClick={() => {
-            setFocusedMethod(1);
-            const [dist, states] = heldKarp(adjMat);
-            animateStates(states, 1);
-            setHeldKarpDist(dist.toFixed(2)); 
-            console.log(edges);
+            setFocusedMethod(0);
+            const [dist, states] = nearestNeighbor(adjMat);
+            animateStates(states, 0);
+            setNearestNeighborDist(dist.toFixed(2));
+            console.log(edges)
           }}
-          style={{color: '#ADFF2F'}}
+          style={{color: '#FF4500'}}
           >
-            Run Held-Karp algorithm
-        </button>
-        <button className='guiBut' 
-        onClick={() => {
-          setFocusedMethod(0);
-          const [dist, states] = nearestNeighbor(adjMat);
-          animateStates(states, 0);
-          setNearestNeighborDist(dist.toFixed(2));
-          console.log(edges)
-        }}
-        style={{color: '#FF4500'}}
-        >
-          Nearest Neighbor
-        </button>
-        <button className='guiBut' onClick={() => {
-          setUserSelection([]); 
-          setFocusedMethod(2)
-        }}
-        style={{color: '#87CEEB'}}
-        >
-          Reset user path
-        </button>
+            Run Nearest Neighbor
+          </button>
+          <button className='focusBut' onClick={() => setFocusedMethod(0)}>
+            <img src="/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => {
+            setNearestNeighborDist(undefined)
+            clearEdges(0)
+          }}>
+            <img src="/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
+
+        <div className='buttonBox'>
+          <div 
+          style={{color: '#87CEEB'}}
+          className='pathText'
+          >
+            User Path
+          </div>
+          <button className='focusBut' onClick={() => setFocusedMethod(2)}>
+            <img src="/glass.svg" alt="F" className='image'/>
+          </button>
+          <button className='removeBut' onClick={() => setUserSelection([])}>
+            <img src="/trash.svg" alt="R" className='image'/>
+          </button>
+        </div>
 
         <div className='arrow-down'></div>
         <div className='gray-box-of-doom-2'>
@@ -286,7 +330,7 @@ function App() {
         <div>Slowest</div>
       </div>
       <Viewer className='viewer'>
-        {allCities && curCities && adjMat && edges ?
+        {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
         <div>
           {curCities.map((c, ind) => 
             <div key={c.city}>

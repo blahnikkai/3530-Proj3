@@ -21,7 +21,6 @@ export function nearestNeighbor(adjMat) {
     totalDist += adjMat[cur][nearest];
 
     workingEdges[cur][nearest] = 0;
-    workingEdges[nearest][cur] = 0;
     states.push(structuredClone(workingEdges));
     
     cur = nearest;
@@ -29,7 +28,6 @@ export function nearestNeighbor(adjMat) {
   // go back to start
   totalDist += adjMat[cur][0];
   workingEdges[cur][0] = 0;
-  workingEdges[0][cur] = 0;
   states.push(structuredClone(workingEdges));
   return [totalDist, states];
 }
