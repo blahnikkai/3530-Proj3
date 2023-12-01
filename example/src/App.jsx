@@ -24,9 +24,9 @@ function App() {
   const [num, setNum] = useState(5);
   const [timeoutId, setTimeoutId] = useState(undefined);
   const [heldKarpDist, setHeldKarpDist] = useState(undefined);
-  // const [heldKarpTime, setHeldKarpTime] = useState(undefined);
+  const [heldKarpTime, setHeldKarpTime] = useState(undefined);
   const [nearestNeighborDist, setNearestNeighborDist] = useState(undefined);
-  //const [nearestNeighborTime, setNearestNeighborTime] = useState(undefined);
+  const [nearestNeighborTime, setNearestNeighborTime] = useState(undefined);
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
@@ -132,7 +132,9 @@ function App() {
     clearTimeout(timeoutId);
     setTimeoutId(null);
     setHeldKarpDist(undefined);
+    setHeldKarpTime(undefined);
     setNearestNeighborDist(undefined);
+    setNearestNeighborTime(undefined);
     let sample = allCities.slice(index, index + num);
     setCurCities(sample); //cap num at 300?
     setIndex((index + num) % 41000);
@@ -220,9 +222,10 @@ function App() {
           <button className='guiBut'
             onClick={() => {
               setFocusedMethod(1);
-              const [dist, states] = heldKarp(adjMat);
+              const [dist, states, time] = heldKarp(adjMat);
               animateStates(states, 1);
               setHeldKarpDist(dist.toFixed(2)); 
+              setHeldKarpTime(time.toFixed(2));
               console.log(edges);
             }}
             style={{color: '#ADFF2F'}}
@@ -244,9 +247,10 @@ function App() {
           <button className='guiBut' 
           onClick={() => {
             setFocusedMethod(0);
-            const [dist, states] = nearestNeighbor(adjMat);
+            const [dist, states, time] = nearestNeighbor(adjMat);
             animateStates(states, 0);
             setNearestNeighborDist(dist.toFixed(2));
+            setNearestNeighborTime(time.toFixed(2));
             console.log(edges)
           }}
           style={{color: '#FF4500'}}
@@ -318,13 +322,13 @@ function App() {
       <div className='resultsGrid'>
         <div>Algorithm</div>
         <div>Distance (km)</div>
-        <div>Time (sec)</div>
+        <div>Time (ms)</div>
         <div style={{color: '#ADFF2F'}}>Held-Karp</div>
         <div>{heldKarpDist}</div>
-        <div>Slower</div>
+        <div>{heldKarpTime}</div>
         <div style={{color: '#FF4500'}}>Nearest Neighbor</div>
         <div>{nearestNeighborDist}</div>
-        <div>Faster</div>        
+        <div>{nearestNeighborTime}</div>        
         <div style={{color: '#87CEEB'}}>Your path</div>
         <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
         <div>Slowest</div>

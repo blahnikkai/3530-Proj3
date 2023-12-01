@@ -2,6 +2,7 @@ import { makeArray } from './MakeArray';
 import { INF } from './HeldKarp'
 
 export function nearestNeighbor(adjMat) {
+  const startTime = performance.now();
   const n = adjMat.length;
   let workingEdges = makeArray(n, n, -1);
   let cur = 0;
@@ -29,5 +30,8 @@ export function nearestNeighbor(adjMat) {
   totalDist += adjMat[cur][0];
   workingEdges[cur][0] = 0;
   states.push(structuredClone(workingEdges));
-  return [totalDist, states];
+  const endTime = performance.now();
+  const timeElapsed = endTime - startTime;
+  console.log(`nn time: ${timeElapsed}`);
+  return [totalDist, states, timeElapsed];
 }

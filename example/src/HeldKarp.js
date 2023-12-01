@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import { makeArray } from './MakeArray';
 
 export const INF = 1e12;
@@ -6,7 +7,8 @@ function inMask(mask, ind) {
   return (mask & (1 << ind)) !== 0;
 }
 
-export function heldKarp(adjMat) { 
+export function heldKarp(adjMat) {
+  const startTime = performance.now();
   const n = adjMat.length;
   let workingEdges = makeArray(n, n, -1);
   let states = [structuredClone(workingEdges)];
@@ -46,5 +48,7 @@ export function heldKarp(adjMat) {
     visited |= (1 << nxtNode);
     cur = nxtNode;    
   }
-  return [dp[1][0], states];
+  const endTime = performance.now();
+  const timeElapsed = endTime - startTime;
+  return [dp[1][0], states, timeElapsed];
 }
