@@ -179,6 +179,7 @@ html, body, #cesiumContainer {
 
 .guiBut {
   /* width: 15vw; */
+  max-width: 15vw;
   z-index: 5;
 }
 

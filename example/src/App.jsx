@@ -230,13 +230,13 @@ function App() {
               Run Held-Karp algorithm
           </button>
           <button className='focusBut' onClick={() => setFocusedMethod(1)}>
-            <img src="/../public/glass.svg" alt="F" className='image'/>
+            <img src="/glass.svg" alt="F" className='image'/>
           </button>
           <button className='removeBut' onClick={() => {
             setHeldKarpDist(undefined)
             clearEdges(1)
           }}>
-            <img src="/../public/trash.svg" alt="R" className='image'/>
+            <img src="/trash.svg" alt="R" className='image'/>
           </button>
         </div>
 
@@ -254,13 +254,13 @@ function App() {
             Run Nearest Neighbor
           </button>
           <button className='focusBut' onClick={() => setFocusedMethod(0)}>
-            <img src="/../public/glass.svg" alt="F" className='image'/>
+            <img src="/glass.svg" alt="F" className='image'/>
           </button>
           <button className='removeBut' onClick={() => {
             setNearestNeighborDist(undefined)
             clearEdges(0)
           }}>
-            <img src="/../public/trash.svg" alt="R" className='image'/>
+            <img src="/trash.svg" alt="R" className='image'/>
           </button>
         </div>
 
@@ -272,10 +272,10 @@ function App() {
             User Path
           </div>
           <button className='focusBut' onClick={() => setFocusedMethod(2)}>
-            <img src="/../public/glass.svg" alt="F" className='image'/>
+            <img src="/glass.svg" alt="F" className='image'/>
           </button>
           <button className='removeBut' onClick={() => setUserSelection([])}>
-            <img src="/../public/trash.svg" alt="R" className='image'/>
+            <img src="/trash.svg" alt="R" className='image'/>
           </button>
         </div>
 
