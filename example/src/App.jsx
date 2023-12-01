@@ -1,6 +1,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Viewer, Entity } from 'resium';
 import { useState, useEffect } from 'react';
+import {Helmet} from "react-helmet";
 import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob';
 
@@ -188,6 +189,11 @@ function App() {
 
   return (
     <div>
+      <Helmet>
+        <title>Optimal Odyssey</title>
+        <link rel="icon" href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
+      </Helmet>
+
       <div className='gui'>
         <div className='gray-box-of-doom'>
           <Donut
