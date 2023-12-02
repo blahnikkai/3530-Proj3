@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 import { Cartesian2, Cartesian3, Color, Ion } from 'cesium';
 import { Viewer, Entity } from 'resium';
 import { useState, useEffect } from 'react';
@@ -12,7 +10,7 @@ import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
 import './App.css';
 
-Ion.defaultAccessToken = process.env.API_KEY;
+Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
 
 
 // REACT CODE
