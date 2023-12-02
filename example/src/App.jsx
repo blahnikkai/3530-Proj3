@@ -1,4 +1,6 @@
-import { Cartesian2, Cartesian3, Color } from 'cesium';
+import 'dotenv/config'
+
+import { Cartesian2, Cartesian3, Color, Ion } from 'cesium';
 import { Viewer, Entity } from 'resium';
 import { useState, useEffect } from 'react';
 import {Helmet} from "react-helmet";
@@ -9,6 +11,9 @@ import { heldKarp } from './HeldKarp';
 import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
 import './App.css';
+
+Ion.defaultAccessToken = process.env.API_KEY;
+
 
 // REACT CODE
 
