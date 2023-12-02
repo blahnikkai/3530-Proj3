@@ -27,3 +27,4 @@ dist-ssr
 .vscode/
 # may not be working lol
 example/.env
+.env
