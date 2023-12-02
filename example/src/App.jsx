@@ -204,7 +204,7 @@ function App() {
         <div className='gray-box-of-doom'>
           <Donut
             diameter={80}
-            min={0}
+            min={2}
             max={20}
             step={1}
             value={num}
@@ -307,12 +307,12 @@ function App() {
             onValueChange={setAnimationSpeed}
           />
         </div>
+
         <div className='pathDisplay'>
           {userSelection.map((val, ind) => {
             return ind == curCities.length ? 
             <div>
               <div className='mini-arrow-up'></div>
-              <div className='minier-arrow-up'></div>
               <div className='pathDisplayTop'>Complete user path:</div>
             </div>
             :
@@ -329,7 +329,8 @@ function App() {
         heldKarpTime={heldKarpTime}
         nearestNeighborDist={nearestNeighborDist}
         nearestNeighborTime={nearestNeighborTime}
-        userDist={userSelection.length > 0 ? calcUserDist() : ''}
+        userDist={calcUserDist()}
+        userPathStarted={userSelection.length > 0}
         userPathComplete={userSelection.length > curCities.length}
       />
 
