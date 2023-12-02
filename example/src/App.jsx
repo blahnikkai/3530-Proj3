@@ -1,4 +1,4 @@
-import { Color } from 'cesium';
+import { Color, Ion } from 'cesium';
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import Papa from 'papaparse';
@@ -10,6 +10,9 @@ import { nearestNeighbor } from './NearestNeighbor';
 import ResultsGrid from './Components/ResultsGrid';
 import GlobeDisplay from './Components/GlobeDisplay';
 import './App.css';
+
+Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
+
 
 // REACT CODE
 
