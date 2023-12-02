@@ -327,21 +327,21 @@ function App() {
         <div className='resultsGrid'>
           {heldKarpDist ? 
           <div className='resultsTab'>
-            <div style={{color: '#ADFF2F'}}>{heldKarpDist}km</div>
-            <div style={{color: '#ADFF2F'}}>{heldKarpTime}ms</div>
+            <div style={{color: '#ADFF2F'}}>{heldKarpDist} km</div>
+            <div style={{color: '#ADFF2F'}}>{heldKarpTime} ms</div>
           </div>
           : <div className='resultsTab' style={{color: '#ADFF2F'}}>{"<Held-Karp>"}</div>
           }
           {nearestNeighborDist ? 
           <div className='resultsTab'>
-            <div style={{color: '#FF4500'}}>{nearestNeighborDist}km</div>
-            <div style={{color: '#FF4500'}}>{nearestNeighborTime}ms</div>
+            <div style={{color: '#FF4500'}}>{nearestNeighborDist} km</div>
+            <div style={{color: '#FF4500'}}>{nearestNeighborTime} ms</div>
           </div>
           : <div className='resultsTab' style={{color: '#FF4500'}}>{"<Nearest Neighbor>"}</div>
           }
           {userSelection.length > 0 ? 
           <div className='resultsTab'>
-            <div style={userSelection.length > num ? {color: '#87CEEB'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
+            <div style={userSelection.length > num ? {color: '#87CEEB'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''} km</div>
             <div style={{color: '#87CEEB'}}>Slowest</div>
           </div>
           : <div className='resultsTab' style={{color: '#87CEEB'}}>{"<User Path>"}</div>
