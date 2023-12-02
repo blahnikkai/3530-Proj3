@@ -1,7 +1,6 @@
 ## TODO
 * Break code into files (distance function is easy)
 * Break html into components (ResultsGrid, etc)
-* make site not break on scaling/zooming
 * add temp num variable so knob doesn't interfere w user paths  (edit - check w subset length)
 
 
@@ -10,3 +9,4 @@
 * add focus / delete buttons for all algos
 * Alex's request: Add favicon and page name
 * make icons show up on vercel
+* neater-scaling UI

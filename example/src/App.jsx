@@ -203,7 +203,7 @@ function App() {
         <div className='gray-box-of-doom'>
           <Donut
             diameter={80}
-            min={0}
+            min={2}
             max={20}
             step={1}
             value={num}
@@ -306,12 +306,12 @@ function App() {
             onValueChange={setAnimationSpeed}
           />
         </div>
+
         <div className='pathDisplay'>
           {userSelection.map((val, ind) => {
             return ind == num ? 
             <div>
               <div className='mini-arrow-up'></div>
-              <div className='minier-arrow-up'></div>
               <div className='pathDisplayTop'>Complete user path:</div>
             </div>
             :
@@ -322,21 +322,39 @@ function App() {
           )}
         </div>
       </div>
-      <div className='resultsGrid'>
-        <div>Algorithm</div>
-        <div>Distance (km)</div>
-        <div>Time (ms)</div>
-        <div style={{color: '#ADFF2F'}}>Held-Karp</div>
-        <div>{heldKarpDist}</div>
-        <div>{heldKarpTime}</div>
-        <div style={{color: '#FF4500'}}>Nearest Neighbor</div>
-        <div>{nearestNeighborDist}</div>
-        <div>{nearestNeighborTime}</div>        
-        <div style={{color: '#87CEEB'}}>Your path</div>
-        <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
-        <div>Slowest</div>
+
+      <div>
+        <div className='resultsGrid'>
+          {heldKarpDist ? 
+          <div className='resultsTab'>
+            <div style={{color: '#ADFF2F'}}>{heldKarpDist} km</div>
+            <div style={{color: '#ADFF2F'}}>{heldKarpTime} ms</div>
+          </div>
+          : <div className='resultsTab' style={{color: '#ADFF2F'}}>{"<Held-Karp>"}</div>
+          }
+          {nearestNeighborDist ? 
+          <div className='resultsTab'>
+            <div style={{color: '#FF4500'}}>{nearestNeighborDist} km</div>
+            <div style={{color: '#FF4500'}}>{nearestNeighborTime} ms</div>
+          </div>
+          : <div className='resultsTab' style={{color: '#FF4500'}}>{"<Nearest Neighbor>"}</div>
+          }
+          {userSelection.length > 0 ? 
+          <div className='resultsTab'>
+            <div style={userSelection.length > num ? {color: '#87CEEB'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''} km</div>
+            <div style={{color: '#87CEEB'}}>Slowest</div>
+          </div>
+          : <div className='resultsTab' style={{color: '#87CEEB'}}>{"<User Path>"}</div>
+          }
+        </div>
+
+        <div className='another-arrow-up'></div>
       </div>
-      <Viewer className='viewer'>
+
+
+
+
+      <Viewer className='viewer' timeline={false} selectionIndicator={true} >
         {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
         <div>
           {curCities.map((c, ind) => 
