@@ -203,7 +203,7 @@ function App() {
         <div className='gray-box-of-doom'>
           <Donut
             diameter={80}
-            min={0}
+            min={2}
             max={20}
             step={1}
             value={num}
@@ -336,7 +336,7 @@ function App() {
         <div style={userSelection.length > num ? {color: '#c2c9d6'} : {color: '#838383'}}>{userSelection.length > 0 ? calcUserDist() : ''}</div>
         <div>Slowest</div>
       </div>
-      <Viewer className='viewer'>
+      <Viewer className='viewer' timeline={false} selectionIndicator={true} >
         {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
         <div>
           {curCities.map((c, ind) => 
