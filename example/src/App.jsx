@@ -34,8 +34,10 @@ function App() {
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
-  const colors = [Color.ORANGERED, Color.GREENYELLOW];
   const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
+  const [search, setSearch] = useState('');
+
+  const colors = [Color.ORANGERED, Color.GREENYELLOW];
 
   function animateStates(states, algoIndex) {
     clearTimeout(timeoutId);
@@ -148,25 +150,17 @@ function App() {
 
   //https://stackoverflow.com/questions/61419710/how-to-import-a-csv-file-in-reactjs
   async function getData() {
-    const data = Papa.parse(await fetchCsv(), {
+    const data = Papa.parse('data/worldcities.csv', {
+      download: true,
       skipEmptyLines: true,
       header: true,
       dynamicTyping: true,
       complete: function(results) {
         setAllCities(results.data.sort(() => 0.5 - Math.random())); //shuffles data
-        // setArray(results.data); //non-shuffled data (debug only)
+        // setAllCities(results.data); //non-shuffled data (debug only)
       }
     });
     return data;
-  }
-  
-  async function fetchCsv() {
-    const response = await fetch('data/worldcities.csv');
-    const reader = response.body.getReader();
-    const result = await reader.read();
-    const decoder = new TextDecoder('utf-8');
-    const csv = decoder.decode(result.value);
-    return csv;
   }
 
   function addToSelection(i) {
@@ -199,6 +193,25 @@ function App() {
         <title>Optimal Odyssey</title>
         <link rel="icon" href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
       </Helmet>
+
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault();
+          const addedCities = allCities.filter((city => city.city_ascii == search));
+          const newCities = curCities.concat(addedCities);
+          setCurCities(newCities);
+        }}
+      >
+        <input 
+          className='searchBar' 
+          type='text'
+          value={search}
+          onChange={(e) => {
+            e.preventDefault();
+            setSearch(e.target.value);
+          }}
+        />
+      </form>
 
       <div className='gui'>
         <div className='gray-box-of-doom'>

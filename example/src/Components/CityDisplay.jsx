@@ -6,7 +6,7 @@ export default function CityDisplay({curCities, addToSelection, cityHover, setCi
   return (
     <>
       {curCities.map((c, ind) => 
-        <div key={c.city}>
+        <div key={c.id}>
           <Entity
             name={c.city}
             position={Cartesian3.fromDegrees(c.lng, c.lat)}

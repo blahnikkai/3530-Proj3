@@ -178,6 +178,13 @@ html, body, #cesiumContainer {
   right: 15vw;
 }
 
+.searchBar {
+  z-index: 100;
+  /* margin: auto; */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 .buttonBox {
   margin-right: -1vw;
