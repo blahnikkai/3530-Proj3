@@ -9,8 +9,9 @@ import { heldKarp } from './HeldKarp';
 import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
 import ResultsGrid from './Components/ResultsGrid';
-import './App.css';
+import AlgoEdges from './Components/AlgoEdges';
 import UserEdges from './Components/UserEdges';
+import './App.css';
 
 // REACT CODE
 
@@ -351,33 +352,13 @@ function App() {
             </div>
           )}
 
-          {edges.map((algoEdges, ind1) => 
-            <div key={ind1}>
-              {algoEdges.map((row, ind2) =>
-                <div key={[ind1, ind2]}>
-                  {row && row.map && row.map((e, ind3) =>
-                    e != -1 ?                 
-                      <div key={[ind1, ind2, ind3]}>
-                        <Entity
-                          polyline={{
-                            show: true,
-                            width: 5,
-                            positions: 
-                              Cartesian3.fromDegreesArray(
-                                [curCities[ind2].lng, curCities[ind2].lat,
-                                curCities[ind3].lng, curCities[ind3].lat]
-                              ),
-                            material: focusedMethod == e ? colors[e] : Color.fromAlpha(colors[e], .5),
-                            onClick: () => {setFocusedMethod(e); console.log(e);}
-                          }}
-                        />
-                      </div> 
-                    : <></>
-                  )}
-                  </div>
-                )}
-            </div>
-          )}
+          <AlgoEdges
+            edges={edges}
+            curCities={curCities}
+            focusedMethod={focusedMethod}
+            setFocusedMethod={setFocusedMethod}
+            colors={colors}
+          />
           
           <UserEdges
             userSelection={userSelection}

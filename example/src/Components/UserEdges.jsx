@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 

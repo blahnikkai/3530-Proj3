@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 export default function ResultsGrid({heldKarpDist, heldKarpTime, nearestNeighborDist, nearestNeighborTime, userDist, userPathComplete}) {
   return (
     <div className='resultsGrid'>
