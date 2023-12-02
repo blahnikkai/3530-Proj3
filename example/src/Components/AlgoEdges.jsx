@@ -4,7 +4,7 @@ import { Entity } from 'resium';
 
 export default function AlgoEdges({edges, curCities, focusedMethod, setFocusedMethod, colors}) {
   return (
-    <div>
+    <>
       {edges.map((algoEdges, ind1) => 
         <div key={ind1}>
           {algoEdges.map((row, ind2) =>
@@ -32,6 +32,6 @@ export default function AlgoEdges({edges, curCities, focusedMethod, setFocusedMe
             )}
         </div>
       )}
-    </div>
+    </>
   )
 }

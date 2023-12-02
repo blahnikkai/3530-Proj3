@@ -1,5 +1,4 @@
-import { Cartesian2, Cartesian3, Color } from 'cesium';
-import { Viewer, Entity } from 'resium';
+import { Color } from 'cesium';
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import Papa from 'papaparse';
@@ -9,8 +8,7 @@ import { heldKarp } from './HeldKarp';
 import { makeArray } from './MakeArray';
 import { nearestNeighbor } from './NearestNeighbor';
 import ResultsGrid from './Components/ResultsGrid';
-import AlgoEdges from './Components/AlgoEdges';
-import UserEdges from './Components/UserEdges';
+import GlobeDisplay from './Components/GlobeDisplay';
 import './App.css';
 
 // REACT CODE
@@ -332,45 +330,17 @@ function App() {
         userPathComplete={userSelection.length > curCities.length}
       />
 
-      <Viewer className='viewer'>
-        {allCities && curCities && adjMat.length > 0 && edges.length > 0 ?
-        <div>
-          {curCities.map((c, ind) => 
-            <div key={c.city}>
-              <Entity
-                name={c.city}
-                position={Cartesian3.fromDegrees(c.lng, c.lat)}
-                point={{ pixelSize: 20, color: cityHover == ind ? Color.SKYBLUE : Color.WHITE}}
-                label={{ text: `${c.city}, ${c.iso3}`, 
-                  font: cityHover == ind ? '16px Victor Mono, monospace' : '12px Victor Mono', 
-                  pixelOffset: new Cartesian2(20, 20) 
-                }}
-                onClick={() => addToSelection(ind)}
-                onMouseEnter={() => setCityHover(ind)}
-                onMouseLeave={() => setCityHover(-1)}
-              />
-            </div>
-          )}
-
-          <AlgoEdges
-            edges={edges}
-            curCities={curCities}
-            focusedMethod={focusedMethod}
-            setFocusedMethod={setFocusedMethod}
-            colors={colors}
-          />
-          
-          <UserEdges
-            userSelection={userSelection}
-            curCities={curCities}
-            userSelectionComplete={userSelection.length > curCities.length}
-            focusedMethod={focusedMethod}
-            setFocusedMethod={setFocusedMethod}
-          />
-
-        </div>
-        : <>Loading...</>}
-      </Viewer>
+      <GlobeDisplay
+        curCities={curCities}
+        edges={edges} 
+        colors={colors}
+        userSelection={userSelection} 
+        addToSelection={addToSelection} 
+        cityHover={cityHover}
+        setCityHover={setCityHover}
+        focusedMethod={focusedMethod}
+        setFocusedMethod={setFocusedMethod}
+      />
     </div>
   );
 }
