@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import { Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
+const colors = [Color.ORANGERED, Color.GREENYELLOW];
 
-export default function AlgoEdges({edges, curCities, focusedMethod, setFocusedMethod, colors}) {
+export default function AlgoEdges({edges, curCities, focusedMethod, setFocusedMethod}) {
   return (
     <>
       {edges.map((algoEdges, ind1) => 
