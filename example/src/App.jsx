@@ -1,12 +1,13 @@
 import { Color, Ion } from 'cesium';
 import { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
-import Papa from 'papaparse';
 import { Donut } from 'react-dial-knob';
 
-import { heldKarp } from './HeldKarp';
-import { makeArray } from './MakeArray';
-import { nearestNeighbor } from './NearestNeighbor';
+import { heldKarp } from './functions/HeldKarp';
+import { shuffle } from './functions/Shuffle'
+import { makeArray } from './functions/MakeArray';
+import { nearestNeighbor } from './functions/NearestNeighbor';
+import { parseCSV } from './functions/ParseCSV';
 import ResultsGrid from './Components/ResultsGrid';
 import GlobeDisplay from './Components/GlobeDisplay';
 import './App.css';
@@ -62,7 +63,10 @@ function App() {
 
   // load city data and build allCities on page load
   useEffect(() => {
-    getData();
+    async function loadAllCities() {
+      setAllCities(shuffle(await parseCSV()));
+    }
+    loadAllCities();
   }, [])
 
   // build curCities on allCities load
@@ -142,44 +146,19 @@ function App() {
     let sample = allCities.slice(index, index + num);
     setCurCities(sample); //cap num at 300?
     setIndex((index + num) % 41000);
-    // why is array length only ~9000 instead of 44000
-    // console.log(array.length);
-  }
-
-  //https://stackoverflow.com/questions/61419710/how-to-import-a-csv-file-in-reactjs
-  async function getData() {
-    const data = Papa.parse(await fetchCsv(), {
-      skipEmptyLines: true,
-      header: true,
-      dynamicTyping: true,
-      complete: function(results) {
-        setAllCities(results.data.sort(() => 0.5 - Math.random())); //shuffles data
-        // setArray(results.data); //non-shuffled data (debug only)
-      }
-    });
-    return data;
   }
   
-  async function fetchCsv() {
-    const response = await fetch('data/worldcities.csv');
-    const reader = response.body.getReader();
-    const result = await reader.read();
-    const decoder = new TextDecoder('utf-8');
-    const csv = decoder.decode(result.value);
-    return csv;
-  }
-
   function addToSelection(i) {
-      setFocusedMethod(2);
-      if (userSelection.length > curCities.length) {
-        return;
-      }
+    setFocusedMethod(2);
+    if (userSelection.length > curCities.length) {
+      return;
+    }
 
-      if (userSelection.find((x) => x == i) == undefined || (userSelection.length == curCities.length && i == userSelection[0])) {
-        setUserSelection(userSelection.concat([i]));
-      } else if (userSelection[userSelection.length - 1] == i) {
-        setUserSelection(userSelection.slice(0, -1));
-      }
+    if (userSelection.find((x) => x == i) == undefined || (userSelection.length == curCities.length && i == userSelection[0])) {
+      setUserSelection(userSelection.concat([i]));
+    } else if (userSelection[userSelection.length - 1] == i) {
+      setUserSelection(userSelection.slice(0, -1));
+    }
   }
 
   function calcUserDist() {
@@ -191,7 +170,6 @@ function App() {
     })
     return sum.toFixed(2);
   }
-
 
   return (
     <div>
