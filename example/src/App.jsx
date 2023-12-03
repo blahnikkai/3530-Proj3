@@ -1,15 +1,13 @@
-import { Color, Ion } from 'cesium';
+import { Ion } from 'cesium';
 import { useState, useEffect } from 'react';
-import { Helmet } from "react-helmet";
-import { Donut } from 'react-dial-knob';
+import { Helmet } from 'react-helmet';
 
-import { heldKarp } from './functions/HeldKarp';
 import { shuffle } from './functions/Shuffle'
 import { makeArray } from './functions/MakeArray';
-import { nearestNeighbor } from './functions/NearestNeighbor';
 import { parseCSV } from './functions/ParseCSV';
 import ResultsGrid from './Components/ResultsGrid';
 import GlobeDisplay from './Components/GlobeDisplay';
+import Toolbar from './Components/Toolbar';
 import './App.css';
 
 Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
@@ -35,7 +33,6 @@ function App() {
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
-  const colors = [Color.ORANGERED, Color.GREENYELLOW];
   const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
 
   function animateStates(states, algoIndex) {
@@ -175,132 +172,28 @@ function App() {
     <div>
       <Helmet>
         <title>Optimal Odyssey</title>
-        <link rel="icon" href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
+        <link rel='icon' href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
       </Helmet>
 
-      <div className='gui'>
-        <div className='gray-box-of-doom'>
-          <Donut
-            diameter={80}
-            min={2}
-            max={20}
-            step={1}
-            value={num}
-            theme={{
-              donutColor: '#303336',
-              bgrColor: '#444',
-              maxedBgrColor: '#444',
-              centerColor: 'rgba(84, 84, 84, 1)',
-              centerFocusedColor: 'rgba(84, 84, 84, 1)',
-              donutThickness: 10,
-            }}
-            onValueChange={setNum}
-          />
-          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
-        </div>
-        <div className='arrow-up'></div>
-
-        <div className='buttonBox'>
-          <button className='guiBut'
-            onClick={() => {
-              setFocusedMethod(1);
-              const [dist, states, time] = heldKarp(adjMat);
-              animateStates(states, 1);
-              setHeldKarpDist(dist.toFixed(2)); 
-              setHeldKarpTime(time.toFixed(2));
-              console.log(edges);
-            }}
-            style={{color: '#ADFF2F'}}
-            >
-              Run Held-Karp algorithm
-          </button>
-          <button className='focusBut' onClick={() => setFocusedMethod(1)}>
-            <img src="/glass.svg" alt="F" className='image'/>
-          </button>
-          <button className='removeBut' onClick={() => {
-            setHeldKarpDist(undefined)
-            clearEdges(1)
-          }}>
-            <img src="/trash.svg" alt="R" className='image'/>
-          </button>
-        </div>
-
-        <div className='buttonBox'>
-          <button className='guiBut' 
-          onClick={() => {
-            setFocusedMethod(0);
-            const [dist, states, time] = nearestNeighbor(adjMat);
-            animateStates(states, 0);
-            setNearestNeighborDist(dist.toFixed(2));
-            setNearestNeighborTime(time.toFixed(2));
-            console.log(edges)
-          }}
-          style={{color: '#FF4500'}}
-          >
-            Run Nearest Neighbor
-          </button>
-          <button className='focusBut' onClick={() => setFocusedMethod(0)}>
-            <img src="/glass.svg" alt="F" className='image'/>
-          </button>
-          <button className='removeBut' onClick={() => {
-            setNearestNeighborDist(undefined)
-            clearEdges(0)
-          }}>
-            <img src="/trash.svg" alt="R" className='image'/>
-          </button>
-        </div>
-
-        <div className='buttonBox'>
-          <div 
-          style={{color: '#87CEEB'}}
-          className='pathText'
-          >
-            User Path
-          </div>
-          <button className='focusBut' onClick={() => setFocusedMethod(2)}>
-            <img src="/glass.svg" alt="F" className='image'/>
-          </button>
-          <button className='removeBut' onClick={() => setUserSelection([])}>
-            <img src="/trash.svg" alt="R" className='image'/>
-          </button>
-        </div>
-
-        <div className='arrow-down'></div>
-        <div className='gray-box-of-doom-2'>
-          <div className='knobLabel'>Animation <br/> speed:</div>
-          <Donut
-            diameter={80}
-            min={0}
-            max={10}
-            step={1}
-            value={animationSpeed}
-            theme={{
-              donutColor: '#303336',
-              bgrColor: '#444',
-              maxedBgrColor: '#444',
-              centerColor: 'rgba(84, 84, 84, 1)',
-              centerFocusedColor: 'rgba(84, 84, 84, 1)',
-              donutThickness: 10,   
-            }}
-            onValueChange={setAnimationSpeed}
-          />
-        </div>
-
-        <div className='pathDisplay'>
-          {userSelection.map((val, ind) => {
-            return ind == curCities.length ? 
-            <div>
-              <div className='mini-arrow-up'></div>
-              <div className='pathDisplayTop'>Complete user path:</div>
-            </div>
-            :
-            <div key={ind} className='pathCity'>
-              {curCities[userSelection[ind]].city}
-            </div>
-          }
-          )}
-        </div>
-      </div>
+      <Toolbar
+        num={num}
+        setNum={setNum}
+        setFocusedMethod={setFocusedMethod}
+        animateStates={animateStates}
+        setHeldKarpDist={setHeldKarpDist}
+        setHeldKarpTime={setHeldKarpTime}
+        setNearestNeighborDist={setNearestNeighborDist}
+        setNearestNeighborTime={setNearestNeighborTime}
+        edges={edges}
+        clearEdges={clearEdges}
+        sampleCities={sampleCities}
+        adjMat={adjMat}
+        animationSpeed={animationSpeed}
+        setAnimationSpeed={setAnimationSpeed}
+        curCities={curCities}
+        userSelection={userSelection}
+        setUserSelection={setUserSelection}
+      />
       
       <ResultsGrid
         heldKarpDist={heldKarpDist}
@@ -315,7 +208,6 @@ function App() {
       <GlobeDisplay
         curCities={curCities}
         edges={edges} 
-        colors={colors}
         userSelection={userSelection} 
         addToSelection={addToSelection} 
         cityHover={cityHover}

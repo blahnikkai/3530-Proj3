@@ -7,7 +7,6 @@ import UserEdges from './UserEdges'
 export default function GlobeDisplay({
   curCities, 
   edges, 
-  colors,
   userSelection, 
   addToSelection, 
   cityHover, setCityHover, 
@@ -28,7 +27,6 @@ export default function GlobeDisplay({
           curCities={curCities}
           focusedMethod={focusedMethod}
           setFocusedMethod={setFocusedMethod}
-          colors={colors}
         />
         <UserEdges
           userSelection={userSelection}
