@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { shuffle } from './functions/Shuffle'
 import { makeArray } from './functions/MakeArray';
 import { parseCSV } from './functions/ParseCSV';
+import { buildAdjMat } from './functions/BuildAdjMat';
 import ResultsGrid from './Components/ResultsGrid';
 import GlobeDisplay from './Components/GlobeDisplay';
 import Toolbar from './Components/Toolbar';
@@ -81,43 +82,22 @@ function App() {
     if(curCities.length === 0) {
       return;
     }
+    setAdjMat([]);
+    setUserSelection([]);
+    setCityHover(-1);
+    clearTimeout(timeoutId);
+    setTimeoutId(null);
+    setHeldKarpDist(undefined);
+    setHeldKarpTime(undefined);
+    setUserStart(undefined);
+    setUserTime(undefined);
+    setNearestNeighborDist(undefined);
+    setNearestNeighborTime(undefined);
     clearEdges();
-    buildAdjMat();
+    setAdjMat(buildAdjMat(curCities));
   }, [curCities])
 
-  // build edges on load
-  // useEffect(() => {
-  //   if(subset.length === 0) {
-  //     return;
-  //   }
-  //   const result = heldKarp(adjMat);
-  //   console.log(edges);
-  //   // setEdges(result[1]);
-
-
-  // }, [adjMat, edges])
-
-  function distance(lat1, lon1, lat2, lon2) {
-    const r = 6371; // km
-    const p = Math.PI / 180;
-    const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
-                  + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
-                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
-    return 2 * r * Math.asin(Math.sqrt(a));
-  }
-
-  function buildAdjMat() {
-    let mat = makeArray(curCities.length, curCities.length, 0);
-    for(let i = 0; i < curCities.length; ++i) {
-      for(let j = i; j < curCities.length; ++j) {
-        const dist = distance(curCities[i].lat, curCities[i].lng, 
-          curCities[j].lat, curCities[j].lng);
-        mat[i][j] = dist;
-        mat[j][i] = dist;
-      }
-    }
-    setAdjMat(mat);
-  }
+  
 
   function clearEdges(index) {
     let newEdges = edges;
@@ -132,18 +112,7 @@ function App() {
   }
 
   async function sampleCities() {
-    setEdges([]); 
-    setAdjMat([]);
-    setUserSelection([]);
-    setCityHover(-1);
-    clearTimeout(timeoutId);
-    setTimeoutId(null);
-    setHeldKarpDist(undefined);
-    setHeldKarpTime(undefined);
-    setUserStart(undefined);
-    setUserTime(undefined);
-    setNearestNeighborDist(undefined);
-    setNearestNeighborTime(undefined);
+    setEdges([]);
     let sample = allCities.slice(index, index + num);
     setCurCities(sample); 
     setIndex((index + num) % 41000);
