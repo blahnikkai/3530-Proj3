@@ -23,8 +23,8 @@ export default function Toolbar({
         <div className='gray-box-of-doom'>
           <Donut
             diameter={80}
-            min={2}
-            max={20}
+            min={0}
+            max={25}
             step={1}
             value={num}
             theme={{
@@ -44,12 +44,13 @@ export default function Toolbar({
         <div className='buttonBox'>
           <button className='guiBut'
             onClick={() => {
+              if(curCities.length === 0)
+                return;
               setFocusedMethod(1);
               const [dist, states, time] = heldKarp(adjMat);
               animateStates(states, 1);
               setHeldKarpDist(dist.toFixed(2)); 
               setHeldKarpTime(time.toFixed(2));
-              console.log(edges);
             }}
             style={{color: '#ADFF2F'}}
             >
@@ -69,12 +70,13 @@ export default function Toolbar({
         <div className='buttonBox'>
           <button className='guiBut' 
           onClick={() => {
+            if(curCities.length === 0)
+              return;
             setFocusedMethod(0);
             const [dist, states, time] = nearestNeighbor(adjMat);
             animateStates(states, 0);
             setNearestNeighborDist(dist.toFixed(2));
             setNearestNeighborTime(time.toFixed(2));
-            console.log(edges)
           }}
           style={{color: '#FF4500'}}
           >

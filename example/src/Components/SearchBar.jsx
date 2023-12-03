@@ -26,7 +26,6 @@ export default function SearchBar({allCities, curCities, setCurCities, search, s
             }));
           }
           setExtraCities(newExtraCities.sort((cityA, cityB) => cityB.population - cityA.population));
-          console.log(newExtraCities);
         }}
       />
       <ul className='searchDropdown'>
@@ -36,7 +35,6 @@ export default function SearchBar({allCities, curCities, setCurCities, search, s
             className='searchDropdownItem'
             onClick={() => {
               if(!curCities.includes(city)) {
-                console.log(city);
                 const newCities = curCities.concat([city]);
                 setCurCities(newCities);
               }

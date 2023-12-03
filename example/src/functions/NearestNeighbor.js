@@ -32,6 +32,5 @@ export function nearestNeighbor(adjMat) {
   states.push(structuredClone(workingEdges));
   const endTime = performance.now();
   const timeElapsed = endTime - startTime;
-  console.log(`nn time: ${timeElapsed}`);
   return [totalDist, states, timeElapsed];
 }
