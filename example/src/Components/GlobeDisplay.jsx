@@ -13,7 +13,7 @@ export default function GlobeDisplay({
   focusedMethod, setFocusedMethod
 }) {
   return (
-    <Viewer className='viewer' timeline={false} selectionIndicator={true}>
+    <Viewer className='viewer' timeline={false} selectionIndicator={true} geocoder={true}>
       {curCities && edges.length > 0 ?
       <div>
         <CityDisplay

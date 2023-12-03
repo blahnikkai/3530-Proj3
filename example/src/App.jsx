@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { shuffle } from './functions/Shuffle'
 import { makeArray } from './functions/MakeArray';
 import { parseCSV } from './functions/ParseCSV';
+import { buildAdjMat } from './functions/BuildAdjMat';
 import SearchBar from './Components/SearchBar';
 import Toolbar from './Components/Toolbar';
 import ResultsGrid from './Components/ResultsGrid';
@@ -35,6 +36,8 @@ function App() {
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
   const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
+  const [userStart, setUserStart] = useState(undefined);
+  const [userTime, setUserTime] = useState(undefined);
   const [search, setSearch] = useState('');
 
   function animateStates(states, algoIndex) {
@@ -81,43 +84,22 @@ function App() {
     if(curCities.length === 0) {
       return;
     }
+    setAdjMat([]);
+    setUserSelection([]);
+    setCityHover(-1);
+    clearTimeout(timeoutId);
+    setTimeoutId(null);
+    setHeldKarpDist(undefined);
+    setHeldKarpTime(undefined);
+    setUserStart(undefined);
+    setUserTime(undefined);
+    setNearestNeighborDist(undefined);
+    setNearestNeighborTime(undefined);
     clearEdges();
-    buildAdjMat();
+    setAdjMat(buildAdjMat(curCities));
   }, [curCities])
 
-  // build edges on load
-  // useEffect(() => {
-  //   if(subset.length === 0) {
-  //     return;
-  //   }
-  //   const result = heldKarp(adjMat);
-  //   console.log(edges);
-  //   // setEdges(result[1]);
-
-
-  // }, [adjMat, edges])
-
-  function distance(lat1, lon1, lat2, lon2) {
-    const r = 6371; // km
-    const p = Math.PI / 180;
-    const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
-                  + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
-                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
-    return 2 * r * Math.asin(Math.sqrt(a));
-  }
-
-  function buildAdjMat() {
-    let mat = makeArray(curCities.length, curCities.length, 0);
-    for(let i = 0; i < curCities.length; ++i) {
-      for(let j = i; j < curCities.length; ++j) {
-        const dist = distance(curCities[i].lat, curCities[i].lng, 
-          curCities[j].lat, curCities[j].lng);
-        mat[i][j] = dist;
-        mat[j][i] = dist;
-      }
-    }
-    setAdjMat(mat);
-  }
+  
 
   function clearEdges(index) {
     let newEdges = edges;
@@ -132,31 +114,31 @@ function App() {
   }
 
   async function sampleCities() {
-    setEdges([]); 
-    setAdjMat([]);
-    setUserSelection([]);
-    setCityHover(-1);
-    clearTimeout(timeoutId);
-    setTimeoutId(null);
-    setHeldKarpDist(undefined);
-    setHeldKarpTime(undefined);
-    setNearestNeighborDist(undefined);
-    setNearestNeighborTime(undefined);
+    setEdges([]);
     let sample = allCities.slice(index, index + num);
-    setCurCities(sample); //cap num at 300?
+    setCurCities(sample); 
     setIndex((index + num) % 41000);
   }
   
   function addToSelection(i) {
     setFocusedMethod(2);
     if (userSelection.length > curCities.length) {
-      return;
+      return; //no dupes
+    } else if (userSelection.length == 0) {
+      setUserStart(performance.now()); //time starts on first click
     }
 
-    if (userSelection.find((x) => x == i) == undefined || (userSelection.length == curCities.length && i == userSelection[0])) {
-      setUserSelection(userSelection.concat([i]));
+    if (userSelection.find((x) => x == i) == undefined) {
+      setUserSelection(userSelection.concat([i])); //add if not already in 
+    } else if (userSelection.length == curCities.length && i == userSelection[0]) {
+      setUserSelection(userSelection.concat([i])); //add if full wrap
+      if (userStart) {
+        setUserTime((performance.now() - userStart).toFixed(2));
+      } else {
+        setUserTime(0.00);
+      }
     } else if (userSelection[userSelection.length - 1] == i) {
-      setUserSelection(userSelection.slice(0, -1));
+      setUserSelection(userSelection.slice(0, -1)); //pop cities off top
     }
   }
 
@@ -213,6 +195,7 @@ function App() {
         userDist={calcUserDist()}
         userPathStarted={userSelection.length > 0}
         userPathComplete={userSelection.length > curCities.length}
+        userTime={userTime}
       />
 
       <GlobeDisplay

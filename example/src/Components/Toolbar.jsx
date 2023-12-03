@@ -11,6 +11,7 @@ export default function Toolbar({
   setHeldKarpTime,
   setNearestNeighborDist,
   setNearestNeighborTime,
+  setUserTime,
   edges, clearEdges,
   sampleCities,
   adjMat,
@@ -22,7 +23,7 @@ export default function Toolbar({
     <div className='gui'>
         <div className='gray-box-of-doom'>
           <Donut
-            diameter={80}
+            diameter={70}
             min={0}
             max={25}
             step={1}
@@ -103,7 +104,7 @@ export default function Toolbar({
           <button className='focusBut' onClick={() => setFocusedMethod(2)}>
             <img src='/glass.svg' alt='F' className='image'/>
           </button>
-          <button className='removeBut' onClick={() => setUserSelection([])}>
+          <button className='removeBut' onClick={() => {setUserSelection([]); setUserTime(undefined)}}>
             <img src='/trash.svg' alt='R' className='image'/>
           </button>
         </div>
@@ -112,7 +113,7 @@ export default function Toolbar({
         <div className='gray-box-of-doom-2'>
           <div className='knobLabel'>Animation <br/> speed:</div>
           <Donut
-            diameter={80}
+            diameter={70}
             min={0}
             max={10}
             step={1}
