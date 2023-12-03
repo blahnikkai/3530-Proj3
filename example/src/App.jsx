@@ -5,9 +5,10 @@ import { Helmet } from 'react-helmet';
 import { shuffle } from './functions/Shuffle'
 import { makeArray } from './functions/MakeArray';
 import { parseCSV } from './functions/ParseCSV';
+import SearchBar from './Components/SearchBar';
+import Toolbar from './Components/Toolbar';
 import ResultsGrid from './Components/ResultsGrid';
 import GlobeDisplay from './Components/GlobeDisplay';
-import Toolbar from './Components/Toolbar';
 import './App.css';
 
 Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
@@ -176,24 +177,13 @@ function App() {
         <link rel='icon' href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
       </Helmet>
 
-      <form 
-        onSubmit={(e) => {
-          e.preventDefault();
-          const addedCities = allCities.filter((city => city.city_ascii == search));
-          const newCities = curCities.concat(addedCities);
-          setCurCities(newCities);
-        }}
-      >
-        <input 
-          className='searchBar' 
-          type='text'
-          value={search}
-          onChange={(e) => {
-            e.preventDefault();
-            setSearch(e.target.value);
-          }}
-        />
-      </form>
+      <SearchBar
+        allCities={allCities}
+        curCities={curCities}
+        setCurCities={setCurCities}
+        search={search}
+        setSearch={setSearch}
+      />
 
       <Toolbar
         num={num}

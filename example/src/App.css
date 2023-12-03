@@ -6,6 +6,7 @@ html, body, #cesiumContainer {
   font-weight: 300;
   color: #c2c9d6;
   font-size: 1.7cqh;
+  box-sizing: border-box;
 }
 
 #root {
@@ -178,12 +179,44 @@ html, body, #cesiumContainer {
   right: 15vw;
 }
 
-.searchBar {
-  z-index: 100;
-  /* margin: auto; */
+.searchContainer {
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.searchBar {
+  z-index: 10;
+  list-style: none;
+  height: 1.5vw;
+  width: 15vw;
+}
+
+.searchDropdown {
+  z-index: 10;
+  top: 2vw;
+  margin: 0;
+  padding: 0;
+  width: 15vw;
+  background-color: white;
+  color: black;
+  max-height: 200px;
+  overflow-y: scroll;
+  min-height: 0;
+}
+
+.searchDropdownItem {
+  padding: .1vw .5vw;
+  list-style-type: none;
+  text-align: left;
+}
+
+.searchDropdownItem:hover {
+  background-color: blue;
+  cursor: pointer;
 }
 
 .buttonBox {
