@@ -34,6 +34,8 @@ function App() {
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
   const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
+  const [userStart, setUserStart] = useState(undefined);
+  const [userTime, setUserTime] = useState(undefined);
 
   function animateStates(states, algoIndex) {
     clearTimeout(timeoutId);
@@ -138,23 +140,34 @@ function App() {
     setTimeoutId(null);
     setHeldKarpDist(undefined);
     setHeldKarpTime(undefined);
+    setUserStart(undefined);
+    setUserTime(undefined);
     setNearestNeighborDist(undefined);
     setNearestNeighborTime(undefined);
     let sample = allCities.slice(index, index + num);
-    setCurCities(sample); //cap num at 300?
+    setCurCities(sample); 
     setIndex((index + num) % 41000);
   }
   
   function addToSelection(i) {
     setFocusedMethod(2);
     if (userSelection.length > curCities.length) {
-      return;
+      return; //no dupes
+    } else if (userSelection.length == 0) {
+      setUserStart(performance.now()); //time starts on first click
     }
 
-    if (userSelection.find((x) => x == i) == undefined || (userSelection.length == curCities.length && i == userSelection[0])) {
-      setUserSelection(userSelection.concat([i]));
+    if (userSelection.find((x) => x == i) == undefined) {
+      setUserSelection(userSelection.concat([i])); //add if not already in 
+    } else if (userSelection.length == curCities.length && i == userSelection[0]) {
+      setUserSelection(userSelection.concat([i])); //add if full wrap
+      if (userStart) {
+        setUserTime((performance.now() - userStart).toFixed(2));
+      } else {
+        setUserTime(0.00);
+      }
     } else if (userSelection[userSelection.length - 1] == i) {
-      setUserSelection(userSelection.slice(0, -1));
+      setUserSelection(userSelection.slice(0, -1)); //pop cities off top
     }
   }
 
@@ -203,6 +216,7 @@ function App() {
         userDist={calcUserDist()}
         userPathStarted={userSelection.length > 0}
         userPathComplete={userSelection.length > curCities.length}
+        userTime={userTime}
       />
 
       <GlobeDisplay

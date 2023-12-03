@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-export default function ResultsGrid({heldKarpDist, heldKarpTime, nearestNeighborDist, nearestNeighborTime, userDist, userPathComplete, userPathStarted}) {
+export default function ResultsGrid({heldKarpDist, heldKarpTime, nearestNeighborDist, nearestNeighborTime, userDist, userPathComplete, userPathStarted, userTime}) {
   return (
     <div>
       <div className='resultsGrid'>
@@ -21,7 +21,7 @@ export default function ResultsGrid({heldKarpDist, heldKarpTime, nearestNeighbor
         {userPathStarted ? 
         <div className='resultsTab'>
           <div style={userPathComplete ? {color: '#87CEEB'} : {color: '#838383'}}>{userDist} km</div>
-          <div style={{color: '#87CEEB'}}>Slowest</div>
+          <div style={{color: '#87CEEB'}}>{userTime} {userTime ? 'ms' : ''}</div>
         </div>
         : <div className='resultsTab' style={{color: '#87CEEB'}}>{'<User Path>'}</div>
         }
