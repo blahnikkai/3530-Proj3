@@ -26,7 +26,7 @@ export default function Toolbar({
           <Donut
             diameter={70}
             min={0}
-            max={25}
+            max={20}
             step={1}
             value={num}
             theme={{
