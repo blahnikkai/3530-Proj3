@@ -118,7 +118,7 @@ export default function Toolbar({
             min={0}
             max={10}
             step={1}
-            value={animationSpeed}
+            value={animationSpeed != 0 ? animationSpeed : "INF"}
             theme={{
               donutColor: '#303336',
               bgrColor: '#444',
