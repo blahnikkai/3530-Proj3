@@ -2,7 +2,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 
-export default function CityDisplay({curCities, addToSelection, removeFromSubset, cityHover, setCityHover, setFocusedMethod}) {
+export default function CityDisplay({curCities, addToSelection, removeFromSubset, cityHover, setCityHover}) {
   return (
     <>
       {curCities.map((c, ind) => 
