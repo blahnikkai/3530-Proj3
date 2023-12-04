@@ -143,6 +143,8 @@ function App() {
   }
 
   function removeFromSubset(c) {
+    setEdges([])
+    setUserSelection([])
     setFocusedMethod(2);
     var newCities = curCities.filter((cit) => cit != c);
     setCurCities(newCities);
