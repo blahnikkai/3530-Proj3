@@ -3,12 +3,14 @@ import { Viewer } from 'resium'
 import CityDisplay from './CityDisplay'
 import AlgoEdges from './AlgoEdges'
 import UserEdges from './UserEdges'
+import { SceneTransforms } from 'cesium'
 
 export default function GlobeDisplay({
-  curCities, 
+  curCities,
   edges, 
   userSelection, 
   addToSelection, 
+  removeFromSubset,
   cityHover, setCityHover, 
   focusedMethod, setFocusedMethod
 }) {
@@ -19,6 +21,7 @@ export default function GlobeDisplay({
         <CityDisplay
           curCities={curCities}
           addToSelection={addToSelection}
+          removeFromSubset={removeFromSubset}
           cityHover={cityHover}
           setCityHover={setCityHover}
         />

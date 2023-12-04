@@ -14,6 +14,7 @@ export default function SearchBar({allCities, curCities, setCurCities, search, s
         className='searchBar' 
         type='text'
         value={search}
+        placeholder='Search cities to add...'
         onChange={(e) => {
           e.preventDefault();
           const newSearch = e.target.value;

@@ -2,7 +2,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 
-export default function CityDisplay({curCities, addToSelection, cityHover, setCityHover}) {
+export default function CityDisplay({curCities, addToSelection, removeFromSubset, cityHover, setCityHover, setFocusedMethod}) {
   return (
     <>
       {curCities.map((c, ind) => 
@@ -16,6 +16,7 @@ export default function CityDisplay({curCities, addToSelection, cityHover, setCi
               pixelOffset: new Cartesian2(20, 20) 
             }}
             onClick={() => addToSelection(ind)}
+            onRightClick={() => removeFromSubset(c)}
             onMouseEnter={() => setCityHover(ind)}
             onMouseLeave={() => setCityHover(-1)}
           />

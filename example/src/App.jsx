@@ -25,7 +25,7 @@ function App() {
   const [edges, setEdges] = useState([]);
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
-  const [num, setNum] = useState(5);
+  const [num, setNum] = useState(0);
   const [timeoutId, setTimeoutId] = useState(undefined);
   const [heldKarpDist, setHeldKarpDist] = useState(undefined);
   const [heldKarpTime, setHeldKarpTime] = useState(undefined);
@@ -142,6 +142,12 @@ function App() {
     }
   }
 
+  function removeFromSubset(c) {
+    setFocusedMethod(2);
+    var newCities = curCities.filter((cit) => cit != c);
+    setCurCities(newCities);
+  }
+
   // calculate the distance of the user's path
   function calcUserDist() {
     let sum = 0;
@@ -203,6 +209,7 @@ function App() {
         edges={edges} 
         userSelection={userSelection} 
         addToSelection={addToSelection} 
+        removeFromSubset={removeFromSubset}
         cityHover={cityHover}
         setCityHover={setCityHover}
         focusedMethod={focusedMethod}

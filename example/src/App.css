@@ -79,6 +79,7 @@ html, body, #cesiumContainer {
   color: #c2c9d6;
   font-style: bold;
   max-height: 3vw;
+  width: 12vw;
 }
 
 /* https://css-tricks.com/snippets/css/css-triangle/ */
@@ -192,7 +193,12 @@ html, body, #cesiumContainer {
   z-index: 10;
   list-style: none;
   height: 1.5vw;
+  font-family: 'Victor Mono', monospace;
+  font-size: .8em;
   width: 15vw;
+  background-color: #303336;
+  color: #c2c9d6;
+  border: 2px solid #444;
 }
 
 .searchDropdown {
@@ -201,8 +207,8 @@ html, body, #cesiumContainer {
   margin: 0;
   padding: 0;
   width: 15vw;
-  background-color: white;
-  color: black;
+  background-color: rgb(84, 84, 84, 1); 
+  color: #c2c9d6;
   max-height: 200px;
   overflow-y: scroll;
   min-height: 0;
@@ -215,7 +221,7 @@ html, body, #cesiumContainer {
 }
 
 .searchDropdownItem:hover {
-  background-color: blue;
+  background-color: #303336;
   cursor: pointer;
 }
 

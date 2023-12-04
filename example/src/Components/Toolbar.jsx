@@ -39,7 +39,7 @@ export default function Toolbar({
             }}
             onValueChange={setNum}
           />
-          <button className='nestedBut' onClick={() => sampleCities()}>Generate Cities</button>
+          <button className='nestedBut' onClick={() => sampleCities()}>{num == 0 ? "Reset Cities" : "Generate Cities"}</button>
         </div>
         <div className='arrow-up'></div>
 
