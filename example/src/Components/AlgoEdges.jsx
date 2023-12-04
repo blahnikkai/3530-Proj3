@@ -3,6 +3,7 @@ import { Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 const colors = [Color.ORANGERED, Color.GREENYELLOW];
 
+// display the paths drawn by algorithms
 export default function AlgoEdges({edges, curCities, focusedMethod, setFocusedMethod}) {
   return (
     <>

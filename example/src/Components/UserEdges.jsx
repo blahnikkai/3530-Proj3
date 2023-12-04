@@ -2,6 +2,7 @@
 import { Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 
+// display edges drawn by user selection
 export default function UserEdges({userSelection, curCities, userSelectionComplete, focusedMethod, setFocusedMethod}) {
   return (
     <>

@@ -1,6 +1,8 @@
 import { makeArray } from './MakeArray';
 import { INF } from './HeldKarp'
 
+// greedy algorithm O(n^2)
+// follows heuristic of adding the closest vertex not already in the path
 export function nearestNeighbor(adjMat) {
   const startTime = performance.now();
   const n = adjMat.length;

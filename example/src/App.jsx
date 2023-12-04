@@ -19,8 +19,7 @@ Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
 
 function App() {
 
-  // state vars
-
+  // state variables
   const [allCities, setAllCities] = useState([]);
   const [curCities, setCurCities] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -35,11 +34,18 @@ function App() {
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
-  const [focusedMethod, setFocusedMethod] = useState(-1); //0 - nn, 1 - hk, 2 - user
+  // 0 - nearest neighor, 1 - held-karp, 2 - user
+  const [focusedMethod, setFocusedMethod] = useState(-1); 
   const [userStart, setUserStart] = useState(undefined);
   const [userTime, setUserTime] = useState(undefined);
   const [search, setSearch] = useState('');
 
+  // animate a series of states using setTimeout
+  // states is a 3d array, where each 2d array is edges in an adjacency
+  // matrix-like format
+  // algoIndex gives what index of edges to update
+  // 0 = nearest neighbor
+  // 1 = held-karp
   function animateStates(states, algoIndex) {
     clearTimeout(timeoutId);
     let i = 0;
@@ -56,13 +62,6 @@ function App() {
     update();
   }
 
-
-
-
-
-
-
-
   // load city data and build allCities on page load
   useEffect(() => {
     async function loadAllCities() {
@@ -75,11 +74,10 @@ function App() {
   useEffect(() => {
     if(allCities.length === 0)
       return;
-    // console.log(allCities);
     sampleCities();
   }, [allCities])
 
-  // build adj matrix on load
+  // on curCities change, clear most state and rebuild adjacency matrix
   useEffect(() => {
     if(curCities.length === 0) {
       return;
@@ -99,8 +97,8 @@ function App() {
     setAdjMat(buildAdjMat(curCities));
   }, [curCities])
 
-  
-
+  // clear the edges array
+  // index gives what algorithm's edges to clear
   function clearEdges(index) {
     let newEdges = edges;
     if(index === undefined)
@@ -113,8 +111,10 @@ function App() {
     return newEdges;
   }
 
+  // get a new random sample of cities
   async function sampleCities() {
     setEdges([]);
+    setUserSelection([]);
     let sample = allCities.slice(index, index + num);
     setCurCities(sample); 
     setIndex((index + num) % 41000);
@@ -142,6 +142,7 @@ function App() {
     }
   }
 
+  // calculate the distance of the user's path
   function calcUserDist() {
     let sum = 0;
     userSelection.map((val, ind) => {
@@ -158,7 +159,7 @@ function App() {
         <title>Optimal Odyssey</title>
         <link rel='icon' href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
       </Helmet>
-
+      
       <SearchBar
         allCities={allCities}
         curCities={curCities}
@@ -176,7 +177,6 @@ function App() {
         setHeldKarpTime={setHeldKarpTime}
         setNearestNeighborDist={setNearestNeighborDist}
         setNearestNeighborTime={setNearestNeighborTime}
-        edges={edges}
         clearEdges={clearEdges}
         sampleCities={sampleCities}
         adjMat={adjMat}

@@ -1,8 +1,11 @@
-export function distance(lat1, lon1, lat2, lon2) {
-  const r = 6371; // km
-  const p = Math.PI / 180;
-  const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
-                + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
-                  (1 - Math.cos((lon2 - lon1) * p)) / 2;
-  return 2 * r * Math.asin(Math.sqrt(a));
+// earth's approximate radius in km
+const radius = 6371;
+const degToRad = Math.PI / 180;
+
+// calculate great circle distance with Haversine formula
+export function distance(lat1, lng1, lat2, lng2) {
+  const a = (1 - Math.cos((lat2 - lat1) * degToRad)) / 2
+                + Math.cos(lat1 * degToRad) * Math.cos(lat2 * degToRad) *
+                  (1 - Math.cos((lng2 - lng1) * degToRad)) / 2;
+  return 2 * radius * Math.asin(Math.sqrt(a));
 }

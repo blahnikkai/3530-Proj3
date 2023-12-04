@@ -1,6 +1,9 @@
 import { makeArray } from './MakeArray';
 import { distance } from './Distance';
 
+// create an adjacency matrix from cities
+// complete graph: from any city, you can travel to any other city
+// weights are great circle distances
 export function buildAdjMat(curCities) {
   let mat = makeArray(curCities.length, curCities.length, 0);
   for(let i = 0; i < curCities.length; ++i) {

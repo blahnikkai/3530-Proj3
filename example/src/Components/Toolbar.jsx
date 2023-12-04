@@ -3,6 +3,7 @@ import { Donut } from 'react-dial-knob';
 import { heldKarp } from '../functions/HeldKarp';
 import { nearestNeighbor } from '../functions/NearestNeighbor';
 
+// GUI of dials and buttons at the bottom of the screen
 export default function Toolbar({
   num, setNum,
   setFocusedMethod,
@@ -12,7 +13,7 @@ export default function Toolbar({
   setNearestNeighborDist,
   setNearestNeighborTime,
   setUserTime,
-  edges, clearEdges,
+  clearEdges,
   sampleCities,
   adjMat,
   animationSpeed, setAnimationSpeed,

@@ -3,10 +3,14 @@ import { makeArray } from './MakeArray';
 
 export const INF = 1e12;
 
+// check if a certain bit is 1 in a bitmask
 function inMask(mask, ind) {
   return (mask & (1 << ind)) !== 0;
 }
 
+// exact algorithm for computing TSP
+// uses bitmask DP
+// O(2^n * n^2), pretty slow
 export function heldKarp(adjMat) {
   const startTime = performance.now();
   const n = adjMat.length;

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 
+// displays distances and times of algorithms and user
 export default function ResultsGrid({heldKarpDist, heldKarpTime, nearestNeighborDist, nearestNeighborTime, userDist, userPathComplete, userPathStarted, userTime}) {
   return (
     <div>
