@@ -11,9 +11,6 @@ export async function parseCSV() {
       download: true,
       complete: function(results) {
         resolve(results.data);
-        // setAllCities(results.data.sort(() => 0.5 - Math.random())); //shuffles data
-        // setArray(results.data); //non-shuffled data (debug only)
-        // console.log(results.data.length);
       }
     });
   });
