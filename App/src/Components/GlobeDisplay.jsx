@@ -3,7 +3,6 @@ import { Viewer } from 'resium'
 import CityDisplay from './CityDisplay'
 import AlgoEdges from './AlgoEdges'
 import UserEdges from './UserEdges'
-import { SceneTransforms } from 'cesium'
 
 export default function GlobeDisplay({
   curCities,
