@@ -1,5 +1,4 @@
 ## TODO
-* comment code
 
 ## DONE
 * Break code into files (distance function is easy)
@@ -12,3 +11,4 @@
 * add temp num variable so knob doesn't interfere w user paths  (edit - check w subset length)
 * make city removal not break everything
 * celebrate 100 commits 🎉🎉🎉
+* comment code

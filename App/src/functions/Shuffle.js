@@ -1,3 +1,4 @@
+// Randomly shuffles elements in an array
 export function shuffle(unshuffled) {
   let shuffled = unshuffled
     .map(value => ({ value, sort: Math.random() }))

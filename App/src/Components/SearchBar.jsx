@@ -6,6 +6,7 @@ function makeCityString(city) {
   return city.city_ascii + ", " + city.admin_name + ", " + city.country;
 }
 
+// The container and dropdown for parsing search input and displaying output results
 export default function SearchBar({allCities, curCities, setCurCities, search, setSearch}) {
   const [extraCities, setExtraCities] = useState([]);
   return (

@@ -19,22 +19,25 @@ Ion.defaultAccessToken = import.meta.env.VITE_API_KEY;
 
 function App() {
 
-  // state variables
+  // city storage
   const [allCities, setAllCities] = useState([]);
   const [curCities, setCurCities] = useState([]);
+  // edge storage
   const [edges, setEdges] = useState([]);
+  // distances between cities
   const [adjMat, setAdjMat] = useState([]);
   const [index, setIndex] = useState(0);
   const [num, setNum] = useState(0);
   const [timeoutId, setTimeoutId] = useState(undefined);
+  // algorithm results
   const [heldKarpDist, setHeldKarpDist] = useState(undefined);
   const [heldKarpTime, setHeldKarpTime] = useState(undefined);
   const [nearestNeighborDist, setNearestNeighborDist] = useState(undefined);
   const [nearestNeighborTime, setNearestNeighborTime] = useState(undefined);
+  // misc
   const [animationSpeed, setAnimationSpeed] = useState(3);
   const [userSelection, setUserSelection] = useState([])
   const [cityHover, setCityHover] = useState(-1);
-  // 0 - nearest neighor, 1 - held-karp, 2 - user
   const [focusedMethod, setFocusedMethod] = useState(-1); 
   const [userStart, setUserStart] = useState(undefined);
   const [userTime, setUserTime] = useState(undefined);
@@ -142,6 +145,7 @@ function App() {
     }
   }
 
+  // removes a given city from the cities array
   function removeFromSubset(c) {
     setEdges([])
     setUserSelection([])
@@ -165,7 +169,7 @@ function App() {
     <div>
       <Helmet>
         <title>Optimal Odyssey</title>
-        <link rel='icon' href='https://avatars.githubusercontent.com/u/83978042?v=4'></link>
+        <link rel='icon' href='https://avatars.githubusercontent.com/u/83978042?v=4'></link> {/* adds Kai to the app */}
       </Helmet>
       
       <SearchBar

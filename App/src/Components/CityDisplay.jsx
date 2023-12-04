@@ -2,6 +2,7 @@
 import { Cartesian2, Cartesian3, Color } from 'cesium';
 import { Entity } from 'resium';
 
+// create a point for every city in curCities, at the location given by the dataset
 export default function CityDisplay({curCities, addToSelection, removeFromSubset, cityHover, setCityHover}) {
   return (
     <>

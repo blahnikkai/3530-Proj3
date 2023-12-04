@@ -4,6 +4,7 @@ import CityDisplay from './CityDisplay'
 import AlgoEdges from './AlgoEdges'
 import UserEdges from './UserEdges'
 
+// GUI container containing cities and edges
 export default function GlobeDisplay({
   curCities,
   edges, 
