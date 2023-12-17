@@ -1,5 +1,5 @@
 # optimal-odyssey
-## optimalodyssey.vercel.app
+## [optimalodyssey.vercel.app](https://optimalodyssey.vercel.app)
 ## [YouTube demo](https://www.youtube.com/watch?v=9Vox03crOko)
 - Animate the solution to the traveling salesperson problem with Held-Karp, which uses bitmask dynamic programming to find an exact solution. 
 - Compare this to a quick approximation found by the nearest neighbor heuristic. 
